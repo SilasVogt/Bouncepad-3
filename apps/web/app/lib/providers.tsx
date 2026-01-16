@@ -8,22 +8,16 @@ interface ProvidersProps {
   children: ReactNode;
 }
 
-/**
- * Wrap your app with this component once you have Clerk and Convex configured.
- *
- * In __root.tsx, change:
- *   <RootDocument><Outlet /></RootDocument>
- * To:
- *   <Providers><RootDocument><Outlet /></RootDocument></Providers>
- */
+const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 export function Providers({ children }: ProvidersProps) {
-  // If Convex is not configured, just render children without providers
-  if (!convex) {
+  // If Convex or Clerk is not configured, just render children without providers
+  if (!convex || !publishableKey) {
     return <>{children}</>;
   }
 
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={publishableKey}>
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         {children}
       </ConvexProviderWithClerk>
