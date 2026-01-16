@@ -4,12 +4,8 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/react-start";
-import { ClerkProvider } from "@clerk/tanstack-start";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { useAuth } from "@clerk/tanstack-start";
 import type { ReactNode } from "react";
 import appCss from "~/app.css?url";
-import { convex } from "~/lib/convex";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -37,13 +33,9 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <ClerkProvider>
-      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        <RootDocument>
-          <Outlet />
-        </RootDocument>
-      </ConvexProviderWithClerk>
-    </ClerkProvider>
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
   );
 }
 
