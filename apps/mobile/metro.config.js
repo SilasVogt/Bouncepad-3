@@ -19,8 +19,8 @@ const config = {
       path.resolve(projectRoot, "node_modules"),
       path.resolve(monorepoRoot, "node_modules"),
     ],
-    // Ensure we can resolve workspace packages
-    disableHierarchicalLookup: true,
+    // DO NOT disable hierarchical lookup - we need it for transitive deps
+    disableHierarchicalLookup: false,
   },
 };
 

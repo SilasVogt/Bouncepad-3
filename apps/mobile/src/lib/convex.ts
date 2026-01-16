@@ -1,10 +1,7 @@
 import { ConvexReactClient } from "convex/react";
 import Constants from "expo-constants";
 
-const convexUrl = Constants.expoConfig?.extra?.convexUrl as string;
+const convexUrl = Constants.expoConfig?.extra?.convexUrl as string | undefined;
 
-if (!convexUrl) {
-  throw new Error("Missing CONVEX_URL in app.config extra");
-}
-
-export const convex = new ConvexReactClient(convexUrl);
+// Allow app to run without Convex configured (for initial development)
+export const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
