@@ -1,0 +1,18 @@
+{
+  "name": "bouncepad",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "bun run --filter @bouncepad/web dev",
+    "dev:mobile": "bun run --filter @bouncepad/mobile start",
+    "dev:backend": "bun run --filter @bouncepad/backend dev",
+    "build:web": "bun run --filter @bouncepad/web build",
+    "build:mobile": "bun run --filter @bouncepad/mobile build"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
