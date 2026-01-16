@@ -1,20 +1,40 @@
 import { Text, View, Pressable } from "react-native";
-import {
-  SignedIn,
-  SignedOut,
-  useUser,
-  useAuth,
-} from "@clerk/clerk-expo";
-import * as Linking from "expo-linking";
+import { SignedIn, SignedOut, useUser, useAuth, useOAuth } from "@clerk/clerk-expo";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@bouncepad/backend/convex/_generated/api";
+import { useEffect } from "react";
 import * as WebBrowser from "expo-web-browser";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Home() {
   const { user } = useUser();
   const { signOut } = useAuth();
+  const convexStatus = useQuery(api.test.ping);
+  const createUser = useMutation(api.users.create);
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+
+  // Sync Clerk user to Convex when signed in
+  useEffect(() => {
+    if (user) {
+      createUser({
+        clerkId: user.id,
+        email: user.emailAddresses[0]?.emailAddress ?? "",
+        name: user.fullName ?? undefined,
+        imageUrl: user.imageUrl ?? undefined,
+      });
+    }
+  }, [user, createUser]);
 
   const handleSignIn = async () => {
-    // For Expo, we need to use OAuth flow
-    // This is a placeholder - you'll configure OAuth in Clerk dashboard
+    try {
+      const { createdSessionId, setActive } = await startOAuthFlow();
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+      }
+    } catch (err) {
+      console.error("OAuth error:", err);
+    }
   };
 
   return (
@@ -24,11 +44,18 @@ export default function Home() {
         RSS-based livestreaming platform
       </Text>
 
+      <Text className="mt-2 text-sm text-gray-500">
+        Convex: {convexStatus ? "Connected" : "Loading..."}
+      </Text>
+
       <View className="mt-8">
         <SignedOut>
-          <Text className="text-gray-400 text-center">
-            Sign in via the web app to test auth
-          </Text>
+          <Pressable
+            onPress={handleSignIn}
+            className="px-6 py-3 bg-white rounded-lg"
+          >
+            <Text className="text-black font-medium">Sign In with Google</Text>
+          </Pressable>
         </SignedOut>
 
         <SignedIn>
