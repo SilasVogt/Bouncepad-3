@@ -6,8 +6,9 @@ import {
   SignedOut,
   useUser,
 } from "@clerk/tanstack-start";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@bouncepad/backend/convex/_generated/api";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -16,6 +17,19 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { user } = useUser();
   const convexStatus = useQuery(api.test.ping);
+  const createUser = useMutation(api.users.create);
+
+  // Sync Clerk user to Convex when signed in
+  useEffect(() => {
+    if (user) {
+      createUser({
+        clerkId: user.id,
+        email: user.emailAddresses[0]?.emailAddress ?? "",
+        name: user.fullName ?? undefined,
+        imageUrl: user.imageUrl ?? undefined,
+      });
+    }
+  }, [user, createUser]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
