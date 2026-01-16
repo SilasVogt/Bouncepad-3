@@ -1,10 +1,11 @@
 import "../global.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Providers } from "../lib/providers";
 
 export default function RootLayout() {
   return (
-    <>
+    <Providers>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -17,6 +18,6 @@ export default function RootLayout() {
           },
         }}
       />
-    </>
+    </Providers>
   );
 }
