@@ -6,6 +6,8 @@ import {
   SignedOut,
   useUser,
 } from "@clerk/tanstack-start";
+import { useQuery } from "convex/react";
+import { api } from "@bouncepad/backend/convex/_generated/api";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -13,12 +15,17 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { user } = useUser();
+  const convexStatus = useQuery(api.test.ping);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <h1 className="text-5xl font-bold motion-preset-slide-down">Bouncepad</h1>
       <p className="mt-4 text-xl text-gray-400 motion-preset-fade motion-delay-200">
         RSS-based livestreaming platform
+      </p>
+
+      <p className="mt-2 text-sm text-gray-500">
+        Convex: {convexStatus ? `Connected` : "Loading..."}
       </p>
 
       <div className="mt-8">

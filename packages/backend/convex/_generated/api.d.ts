@@ -10,6 +10,7 @@
 
 import type * as feeds from "../feeds.js";
 import type * as streams from "../streams.js";
+import type * as test from "../test.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   feeds: typeof feeds;
   streams: typeof streams;
+  test: typeof test;
   users: typeof users;
 }>;
 
