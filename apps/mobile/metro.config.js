@@ -5,16 +5,24 @@ const path = require("path");
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, "../..");
 
-const config = getDefaultConfig(projectRoot);
+// Get the default Expo config first
+const defaultConfig = getDefaultConfig(projectRoot);
 
-// Watch all files in the monorepo
-config.watchFolders = [monorepoRoot];
-
-// Let Metro know where to resolve packages
-config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, "node_modules"),
-  path.resolve(monorepoRoot, "node_modules"),
-];
+// Configure for monorepo
+const config = {
+  ...defaultConfig,
+  projectRoot,
+  watchFolders: [monorepoRoot],
+  resolver: {
+    ...defaultConfig.resolver,
+    nodeModulesPaths: [
+      path.resolve(projectRoot, "node_modules"),
+      path.resolve(monorepoRoot, "node_modules"),
+    ],
+    // Ensure we can resolve workspace packages
+    disableHierarchicalLookup: true,
+  },
+};
 
 module.exports = withUniwindConfig(config, {
   cssEntryFile: "./src/global.css",

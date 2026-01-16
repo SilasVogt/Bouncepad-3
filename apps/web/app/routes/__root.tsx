@@ -3,7 +3,7 @@ import {
   ScrollRestoration,
   createRootRoute,
 } from "@tanstack/react-router";
-import { Meta, Scripts } from "@tanstack/start";
+import { Meta, Scripts } from "@tanstack/react-start";
 import { ClerkProvider } from "@clerk/tanstack-start";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { useAuth } from "@clerk/tanstack-start";
