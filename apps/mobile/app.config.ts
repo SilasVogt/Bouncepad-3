@@ -17,6 +17,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.bouncepad.app",
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -30,12 +33,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     output: "static",
     favicon: "./assets/favicon.png",
   },
-  plugins: ["expo-router", "expo-secure-store"],
+  plugins: ["expo-router", "expo-secure-store", "react-native-bottom-tabs"],
   experiments: {
     typedRoutes: true,
   },
   extra: {
     clerkPublishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY,
     convexUrl: process.env.EXPO_PUBLIC_CONVEX_URL,
+    eas: {
+      projectId: "aa9717f2-ba18-4957-bb57-5d2cf3929b9d",
+    },
   },
 });
