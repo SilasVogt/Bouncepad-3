@@ -4,6 +4,9 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@bouncepad/backend/convex/_generated/api";
 import { useEffect } from "react";
 import * as WebBrowser from "expo-web-browser";
+import { AccentColorPicker } from "../../components/AccentColorPicker";
+import { useTheme } from "../../lib/theme";
+import type { ThemeMode } from "@bouncepad/shared";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -13,6 +16,7 @@ export default function Home() {
   const convexStatus = useQuery(api.test.ping);
   const createUser = useMutation(api.users.create);
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+  const { mode, setMode, colors } = useTheme();
 
   // Sync Clerk user to Convex when signed in
   useEffect(() => {
@@ -38,7 +42,7 @@ export default function Home() {
   };
 
   // Sample colorful cards to demonstrate glass effect when scrolling
-  const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899"];
+  const sampleColors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899"];
 
   return (
     <ScrollView
@@ -81,11 +85,49 @@ export default function Home() {
         </View>
       </View>
 
+      {/* Theme Settings */}
+      <View
+        style={{ backgroundColor: colors.border }}
+        className="p-4 rounded-2xl mb-6"
+      >
+        <Text style={{ color: colors.foreground }} className="text-lg font-semibold mb-4">
+          Theme Settings
+        </Text>
+
+        <Text style={{ color: colors.muted }} className="text-sm mb-2">
+          Mode
+        </Text>
+        <View className="flex-row gap-2 mb-4">
+          {(["system", "light", "dark"] as ThemeMode[]).map((m) => (
+            <Pressable
+              key={m}
+              onPress={() => setMode(m)}
+              style={{
+                backgroundColor: mode === m ? colors.accent.main : colors.background,
+              }}
+              className="px-3 py-2 rounded-lg"
+            >
+              <Text
+                style={{ color: mode === m ? "#fff" : colors.foreground }}
+                className="capitalize"
+              >
+                {m}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={{ color: colors.muted }} className="text-sm mb-2">
+          Accent Color
+        </Text>
+        <AccentColorPicker />
+      </View>
+
       <Text className="text-lg font-semibold text-foreground mb-4">
         Scroll to see liquid glass effect:
       </Text>
 
-      {colors.map((color, i) => (
+      {sampleColors.map((color, i) => (
         <View
           key={i}
           style={{ backgroundColor: color }}
