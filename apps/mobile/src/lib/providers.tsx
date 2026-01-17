@@ -4,6 +4,7 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import Constants from "expo-constants";
 import { tokenCache } from "./clerk";
 import { convex } from "./convex";
+import { ThemeProvider } from "./theme";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -12,25 +13,20 @@ interface ProvidersProps {
 const clerkPublishableKey = Constants.expoConfig?.extra
   ?.clerkPublishableKey as string | undefined;
 
-/**
- * Wrap your app with this component once you have Clerk and Convex configured.
- *
- * In _layout.tsx, change:
- *   <><StatusBar /><Stack /></>
- * To:
- *   <Providers><StatusBar /><Stack /></Providers>
- */
 export function Providers({ children }: ProvidersProps) {
-  // If Clerk or Convex is not configured, just render children without providers
+  // ThemeProvider is always available
+  const themedChildren = <ThemeProvider>{children}</ThemeProvider>;
+
+  // If Clerk or Convex is not configured, just render with theme only
   if (!clerkPublishableKey || !convex) {
-    return <>{children}</>;
+    return themedChildren;
   }
 
   return (
     <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          {children}
+          {themedChildren}
         </ConvexProviderWithClerk>
       </ClerkLoaded>
     </ClerkProvider>

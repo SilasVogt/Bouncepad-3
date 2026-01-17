@@ -2,8 +2,23 @@
 @plugin "tailwindcss-motion";
 
 :root {
+  /* Default light theme - will be overridden by ThemeProvider */
+  --background: #fafafa;
+  --foreground: #171717;
+  --muted: #a3a3a3;
+  --border: #e5e5e5;
+
+  /* Default accent (blue) - will be overridden by ThemeProvider */
+  --accent-light: #bfdbfe;
+  --accent-main: #3b82f6;
+  --accent-dark: #1e40af;
+}
+
+.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --muted: #737373;
+  --border: #262626;
 }
 
 body {
@@ -11,4 +26,38 @@ body {
   color: var(--foreground);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Utility classes for accent colors */
+.bg-accent {
+  background-color: var(--accent-main);
+}
+
+.bg-accent-light {
+  background-color: var(--accent-light);
+}
+
+.bg-accent-dark {
+  background-color: var(--accent-dark);
+}
+
+.text-accent {
+  color: var(--accent-main);
+}
+
+.text-accent-light {
+  color: var(--accent-light);
+}
+
+.text-accent-dark {
+  color: var(--accent-dark);
+}
+
+.border-accent {
+  border-color: var(--accent-main);
+}
+
+.ring-accent {
+  --tw-ring-color: var(--accent-main);
 }
