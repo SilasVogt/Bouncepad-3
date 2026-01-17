@@ -1,13 +1,22 @@
 import { View, Pressable, StyleSheet } from "react-native";
-import { accentColors, accentColorKeys, type AccentColorKey } from "@bouncepad/shared";
+import {
+  accentColors,
+  accentColorKeys,
+  gnomeAccentColorKeys,
+} from "@bouncepad/shared";
 import { useTheme } from "../lib/theme";
 
-export function AccentColorPicker() {
+interface AccentColorPickerProps {
+  variant?: "full" | "gnome";
+}
+
+export function AccentColorPicker({ variant = "gnome" }: AccentColorPickerProps) {
   const { accentColor, setAccentColor, colors } = useTheme();
+  const colorKeys = variant === "gnome" ? gnomeAccentColorKeys : accentColorKeys;
 
   return (
     <View style={styles.container}>
-      {accentColorKeys.map((key) => {
+      {colorKeys.map((key) => {
         const color = accentColors[key];
         const isSelected = key === accentColor;
 

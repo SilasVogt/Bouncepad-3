@@ -104,11 +104,30 @@ export const accentColors = {
     500: "#f43f5e",
     800: "#9f1239",
   },
+  slate: {
+    name: "Slate",
+    200: "#e2e8f0",
+    500: "#64748b",
+    800: "#1e293b",
+  },
 } as const;
 
 export type AccentColorKey = keyof typeof accentColors;
 
 export const accentColorKeys = Object.keys(accentColors) as AccentColorKey[];
+
+// GNOME-style simplified color palette (9 colors)
+export const gnomeAccentColorKeys: AccentColorKey[] = [
+  "blue",
+  "teal",
+  "green",
+  "yellow",
+  "orange",
+  "red",
+  "pink",
+  "purple",
+  "slate",
+];
 
 export const defaultAccentColor: AccentColorKey = "blue";
 

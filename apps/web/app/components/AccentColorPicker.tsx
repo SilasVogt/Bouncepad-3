@@ -1,12 +1,22 @@
-import { accentColors, accentColorKeys, type AccentColorKey } from "@bouncepad/shared";
+import {
+  accentColors,
+  accentColorKeys,
+  gnomeAccentColorKeys,
+  type AccentColorKey,
+} from "@bouncepad/shared";
 import { useTheme } from "~/lib/theme";
 
-export function AccentColorPicker() {
+interface AccentColorPickerProps {
+  variant?: "full" | "gnome";
+}
+
+export function AccentColorPicker({ variant = "gnome" }: AccentColorPickerProps) {
   const { accentColor, setAccentColor } = useTheme();
+  const colorKeys = variant === "gnome" ? gnomeAccentColorKeys : accentColorKeys;
 
   return (
     <div className="flex flex-wrap gap-2">
-      {accentColorKeys.map((key) => {
+      {colorKeys.map((key) => {
         const color = accentColors[key];
         const isSelected = key === accentColor;
 

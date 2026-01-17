@@ -57,3 +57,27 @@ export const update = mutation({
     });
   },
 });
+
+export const updateThemePreferences = mutation({
+  args: {
+    clerkId: v.string(),
+    themeMode: v.optional(v.union(v.literal("system"), v.literal("light"), v.literal("dark"))),
+    accentColor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updates: Record<string, any> = {};
+    if (args.themeMode !== undefined) updates.themeMode = args.themeMode;
+    if (args.accentColor !== undefined) updates.accentColor = args.accentColor;
+
+    return await ctx.db.patch(user._id, updates);
+  },
+});

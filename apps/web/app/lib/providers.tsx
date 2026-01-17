@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/tanstack-start";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { useAuth } from "@clerk/tanstack-start";
 import { convex } from "./convex";
-import { ThemeProvider } from "./theme";
+import { ThemeProvider, ThemeProviderBasic } from "./theme";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -12,18 +12,16 @@ interface ProvidersProps {
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 export function Providers({ children }: ProvidersProps) {
-  // ThemeProvider is always available
-  const themedChildren = <ThemeProvider>{children}</ThemeProvider>;
-
-  // If Convex or Clerk is not configured, just render with theme only
+  // If Convex or Clerk is not configured, use basic theme (no Convex sync)
   if (!convex || !publishableKey) {
-    return themedChildren;
+    return <ThemeProviderBasic>{children}</ThemeProviderBasic>;
   }
 
+  // Full providers with Convex sync
   return (
     <ClerkProvider publishableKey={publishableKey}>
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        {themedChildren}
+        <ThemeProvider>{children}</ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   );

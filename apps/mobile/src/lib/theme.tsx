@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from "react";
 import { useColorScheme } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   accentColors,
   defaultAccentColor,
@@ -15,6 +14,21 @@ import {
   type ThemeMode,
   type ThemeColors,
 } from "@bouncepad/shared";
+
+// AsyncStorage import - will be null if native module not linked (needs rebuild)
+let AsyncStorage: any = null;
+
+async function getStorage() {
+  if (AsyncStorage === null) {
+    try {
+      const module = await import("@react-native-async-storage/async-storage");
+      AsyncStorage = module.default;
+    } catch (e) {
+      AsyncStorage = false; // Mark as unavailable
+    }
+  }
+  return AsyncStorage || null;
+}
 
 interface ThemeContextValue {
   mode: ThemeMode;
@@ -35,15 +49,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>("system");
   const [accentColor, setAccentColorState] =
     useState<AccentColorKey>(defaultAccentColor);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load saved preferences
+  // Load saved preferences (only if AsyncStorage is available)
   useEffect(() => {
     async function loadPreferences() {
+      const storage = await getStorage();
+      if (!storage) return;
+
       try {
         const [savedMode, savedAccent] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEY_MODE),
-          AsyncStorage.getItem(STORAGE_KEY_ACCENT),
+          storage.getItem(STORAGE_KEY_MODE),
+          storage.getItem(STORAGE_KEY_ACCENT),
         ]);
 
         if (savedMode) setModeState(savedMode as ThemeMode);
@@ -52,8 +68,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
       } catch (e) {
         console.error("Failed to load theme preferences:", e);
-      } finally {
-        setIsLoaded(true);
       }
     }
 
@@ -67,26 +81,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setMode = async (newMode: ThemeMode) => {
     setModeState(newMode);
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY_MODE, newMode);
-    } catch (e) {
-      console.error("Failed to save theme mode:", e);
+    const storage = await getStorage();
+    if (storage) {
+      try {
+        await storage.setItem(STORAGE_KEY_MODE, newMode);
+      } catch (e) {
+        console.error("Failed to save theme mode:", e);
+      }
     }
   };
 
   const setAccentColor = async (color: AccentColorKey) => {
     setAccentColorState(color);
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY_ACCENT, color);
-    } catch (e) {
-      console.error("Failed to save accent color:", e);
+    const storage = await getStorage();
+    if (storage) {
+      try {
+        await storage.setItem(STORAGE_KEY_ACCENT, color);
+      } catch (e) {
+        console.error("Failed to save accent color:", e);
+      }
     }
   };
-
-  // Don't render until preferences are loaded to avoid flash
-  if (!isLoaded) {
-    return null;
-  }
 
   return (
     <ThemeContext.Provider

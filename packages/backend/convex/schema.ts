@@ -8,6 +8,9 @@ export default defineSchema({
     name: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     createdAt: v.number(),
+    // Theme preferences (synced across devices)
+    themeMode: v.optional(v.union(v.literal("system"), v.literal("light"), v.literal("dark"))),
+    accentColor: v.optional(v.string()),
   }).index("by_clerk_id", ["clerkId"]),
 
   feeds: defineTable({

@@ -1,6 +1,7 @@
 export {
   accentColors,
   accentColorKeys,
+  gnomeAccentColorKeys,
   defaultAccentColor,
   getThemeColors,
   type AccentColorKey,
