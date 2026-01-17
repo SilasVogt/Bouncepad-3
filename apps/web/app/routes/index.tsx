@@ -35,7 +35,7 @@ function Home() {
   }, [user, createUser]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+    <div className="flex flex-col items-center justify-center p-8 min-h-[80vh]">
       <h1 className="text-5xl font-bold motion-preset-slide-down">Bouncepad</h1>
       <p className="mt-4 text-xl text-[var(--muted)] motion-preset-fade motion-delay-200">
         RSS-based livestreaming platform

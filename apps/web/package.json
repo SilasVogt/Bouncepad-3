@@ -9,13 +9,14 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@bouncepad/backend": "workspace:*",
+    "@bouncepad/shared": "workspace:*",
     "@clerk/tanstack-start": "^0.4.0",
     "@tanstack/react-router": "^1.150.0",
     "@tanstack/react-router-devtools": "^1.150.0",
     "@tanstack/react-start": "^1.150.0",
-    "@bouncepad/backend": "workspace:*",
-    "@bouncepad/shared": "workspace:*",
     "convex": "^1.17.0",
+    "lucide-react": "^0.562.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

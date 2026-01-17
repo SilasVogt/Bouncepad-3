@@ -1,8 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Text, ScrollView } from "react-native";
-import { useTheme } from "../../lib/theme";
-import { CategoryRow } from "../../components/CategoryRow";
+import { CategoryRow } from "~/components/CategoryRow";
 import type { PodcastCardData } from "@bouncepad/shared";
+
+export const Route = createFileRoute("/explore")({
+  component: Explore,
+});
 
 // Mock data organized by category
 const mockCategories: { id: string; name: string; podcasts: PodcastCardData[] }[] = [
@@ -53,8 +56,7 @@ const mockCategories: { id: string; name: string; podcasts: PodcastCardData[] }[
   },
 ];
 
-export default function Explore() {
-  const { colors } = useTheme();
+function Explore() {
   const [categories, setCategories] = useState(mockCategories);
 
   const handleFollow = (podcastId: string) => {
@@ -69,27 +71,19 @@ export default function Explore() {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ paddingTop: 60, paddingBottom: 100 }}
-    >
-      <Text style={{ color: colors.foreground, fontSize: 32, fontWeight: "bold", marginBottom: 4, paddingHorizontal: 16 }}>
-        Explore
-      </Text>
-      <Text style={{ color: colors.muted, marginBottom: 24, paddingHorizontal: 16 }}>
-        Discover new streams
-      </Text>
+    <div className="p-6">
+      <h1 className="text-4xl font-bold mb-2">Explore</h1>
+      <p className="text-[var(--muted)] mb-8">Discover new streams</p>
 
       {categories.map((category) => (
         <CategoryRow
           key={category.id}
-          id={category.id}
           name={category.name}
           podcasts={category.podcasts}
           onFollow={handleFollow}
           onPodcastPress={(id) => console.log("Pressed:", id)}
         />
       ))}
-    </ScrollView>
+    </div>
   );
 }

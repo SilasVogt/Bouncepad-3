@@ -40,3 +40,16 @@ export interface ApiResponse<T> {
   error?: string;
   success: boolean;
 }
+
+// Podcast/Feed card display types
+export type PodcastStatus = "offline" | "scheduled" | "live";
+
+export interface PodcastCardData {
+  id: string;
+  title: string;
+  creatorName: string;
+  imageUrl?: string;
+  status: PodcastStatus;
+  isFollowing?: boolean;
+  scheduledTime?: number; // Unix timestamp for scheduled streams
+}
