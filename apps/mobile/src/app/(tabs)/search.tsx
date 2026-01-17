@@ -1,10 +1,13 @@
 import { Text, View } from "react-native";
+import { useTheme } from "../../lib/theme";
 
 export default function Search() {
+  const { colors } = useTheme();
+
   return (
-    <View className="flex-1 items-center justify-center bg-background p-8">
-      <Text className="text-3xl font-bold text-foreground">Search</Text>
-      <Text className="mt-4 text-gray-400">Find streams and creators</Text>
+    <View style={{ flex: 1, backgroundColor: colors.background, padding: 32, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ color: colors.foreground }} className="text-3xl font-bold">Search</Text>
+      <Text style={{ color: colors.muted }} className="mt-4">Find streams and creators</Text>
     </View>
   );
 }

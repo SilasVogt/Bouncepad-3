@@ -46,16 +46,16 @@ export default function Home() {
 
   return (
     <ScrollView
-      className="flex-1 bg-background"
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
     >
       <View className="items-center mt-12 mb-8">
-        <Text className="text-4xl font-bold text-foreground">Bouncepad</Text>
-        <Text className="mt-2 text-lg text-gray-400">
+        <Text style={{ color: colors.foreground }} className="text-4xl font-bold">Bouncepad</Text>
+        <Text style={{ color: colors.muted }} className="mt-2 text-lg">
           RSS-based livestreaming platform
         </Text>
 
-        <Text className="mt-2 text-sm text-gray-500">
+        <Text style={{ color: colors.muted }} className="mt-2 text-sm">
           Convex: {convexStatus ? "Connected" : "Loading..."}
         </Text>
 
@@ -123,7 +123,7 @@ export default function Home() {
         <AccentColorPicker />
       </View>
 
-      <Text className="text-lg font-semibold text-foreground mb-4">
+      <Text style={{ color: colors.foreground }} className="text-lg font-semibold mb-4">
         Scroll to see liquid glass effect:
       </Text>
 

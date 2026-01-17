@@ -2,12 +2,16 @@ import { Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from "../../lib/theme";
 
 export default function TabLayout() {
+  const { colors, accentColor } = useTheme();
+
   // Use native tabs on iOS for liquid glass
+  // Key forces re-mount when accent color changes since NativeTabs caches tintColor
   if (Platform.OS === "ios") {
     return (
-      <NativeTabs>
+      <NativeTabs key={accentColor} tintColor={colors.accent.main}>
         <NativeTabs.Trigger name="index">
           <Icon sf="house.fill" />
           <Label>Home</Label>
@@ -33,9 +37,9 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: "#0a0a0a", borderTopColor: "#1a1a1a" },
-        tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "#888",
+        tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border },
+        tabBarActiveTintColor: colors.accent.main,
+        tabBarInactiveTintColor: colors.muted,
       }}
     >
       <Tabs.Screen
