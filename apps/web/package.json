@@ -15,7 +15,9 @@
     "@tanstack/react-router": "^1.150.0",
     "@tanstack/react-router-devtools": "^1.150.0",
     "@tanstack/react-start": "^1.150.0",
+    "@vidstack/react": "^0.6.15",
     "convex": "^1.17.0",
+    "hls.js": "^1.6.15",
     "lucide-react": "^0.562.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"

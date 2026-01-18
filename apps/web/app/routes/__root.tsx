@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import appCss from "~/app.css?url";
 import { Providers } from "~/lib/providers";
 import { Navigation } from "~/components/Navigation";
+import { MiniPlayer } from "~/components/MiniPlayer";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -38,9 +39,10 @@ function RootComponent() {
     <Providers>
       <RootDocument>
         <Navigation />
-        <main className="md:ml-64 pb-20 md:pb-0 min-h-screen">
+        <main className="md:ml-64 pb-24 min-h-screen">
           <Outlet />
         </main>
+        <MiniPlayer />
       </RootDocument>
     </Providers>
   );

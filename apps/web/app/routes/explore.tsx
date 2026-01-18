@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { CategoryRow } from "~/components/CategoryRow";
 import type { PodcastCardData } from "@bouncepad/shared";
@@ -58,6 +58,7 @@ const mockCategories: { id: string; name: string; podcasts: PodcastCardData[] }[
 
 function Explore() {
   const [categories, setCategories] = useState(mockCategories);
+  const navigate = useNavigate();
 
   const handleFollow = (podcastId: string) => {
     setCategories((prev) =>
@@ -68,6 +69,10 @@ function Explore() {
         ),
       }))
     );
+  };
+
+  const handlePodcastPress = (id: string) => {
+    navigate({ to: "/podcast/$id", params: { id } });
   };
 
   return (
@@ -81,7 +86,7 @@ function Explore() {
           name={category.name}
           podcasts={category.podcasts}
           onFollow={handleFollow}
-          onPodcastPress={(id) => console.log("Pressed:", id)}
+          onPodcastPress={handlePodcastPress}
         />
       ))}
     </div>

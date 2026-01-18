@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Text, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 import { useTheme } from "../../lib/theme";
 import { CategoryRow } from "../../components/CategoryRow";
 import type { PodcastCardData } from "@bouncepad/shared";
@@ -55,6 +56,7 @@ const mockCategories: { id: string; name: string; podcasts: PodcastCardData[] }[
 
 export default function Explore() {
   const { colors } = useTheme();
+  const router = useRouter();
   const [categories, setCategories] = useState(mockCategories);
 
   const handleFollow = (podcastId: string) => {
@@ -66,6 +68,10 @@ export default function Explore() {
         ),
       }))
     );
+  };
+
+  const handlePodcastPress = (id: string) => {
+    router.push({ pathname: "/podcast/[id]", params: { id } });
   };
 
   return (
@@ -87,7 +93,7 @@ export default function Explore() {
           name={category.name}
           podcasts={category.podcasts}
           onFollow={handleFollow}
-          onPodcastPress={(id) => console.log("Pressed:", id)}
+          onPodcastPress={handlePodcastPress}
         />
       ))}
     </ScrollView>

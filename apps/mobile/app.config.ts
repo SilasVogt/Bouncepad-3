@@ -19,6 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: "com.bouncepad.app",
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      UIBackgroundModes: ["audio"],
     },
   },
   android: {
@@ -33,7 +34,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     output: "static",
     favicon: "./assets/favicon.png",
   },
-  plugins: ["expo-router", "expo-secure-store", "react-native-bottom-tabs"],
+  plugins: [
+    "expo-router",
+    "expo-secure-store",
+    "react-native-bottom-tabs",
+    "expo-audio",
+    [
+      "expo-video",
+      {
+        supportsBackgroundPlayback: true,
+        supportsPictureInPicture: true,
+      },
+    ],
+  ],
   experiments: {
     typedRoutes: true,
   },
