@@ -19,6 +19,7 @@
     "convex": "^1.17.0",
     "hls.js": "^1.6.15",
     "lucide-react": "^0.562.0",
+    "posthog-js": "^1.330.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

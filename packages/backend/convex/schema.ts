@@ -11,6 +11,8 @@ export default defineSchema({
     // Theme preferences (synced across devices)
     themeMode: v.optional(v.union(v.literal("system"), v.literal("light"), v.literal("dark"))),
     accentColor: v.optional(v.string()),
+    // User roles for access control
+    roles: v.optional(v.array(v.union(v.literal("user"), v.literal("admin")))),
   }).index("by_clerk_id", ["clerkId"]),
 
   feeds: defineTable({

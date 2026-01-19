@@ -10,6 +10,7 @@
     "deploy": "convex deploy"
   },
   "dependencies": {
+    "@samhoque/convex-posthog": "^0.1.1",
     "convex": "^1.17.0"
   },
   "devDependencies": {

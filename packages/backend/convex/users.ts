@@ -81,3 +81,44 @@ export const updateThemePreferences = mutation({
     return await ctx.db.patch(user._id, updates);
   },
 });
+
+export const isAdmin = query({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+
+    return user?.roles?.includes("admin") ?? false;
+  },
+});
+
+export const updateRoles = mutation({
+  args: {
+    adminClerkId: v.string(),
+    targetClerkId: v.string(),
+    roles: v.array(v.union(v.literal("user"), v.literal("admin"))),
+  },
+  handler: async (ctx, args) => {
+    const admin = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.adminClerkId))
+      .unique();
+
+    if (!admin?.roles?.includes("admin")) {
+      throw new Error("Unauthorized: Admin access required");
+    }
+
+    const targetUser = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.targetClerkId))
+      .unique();
+
+    if (!targetUser) {
+      throw new Error("Target user not found");
+    }
+
+    return await ctx.db.patch(targetUser._id, { roles: args.roles });
+  },
+});
