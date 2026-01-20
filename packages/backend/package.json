@@ -10,6 +10,12 @@
     "deploy": "convex deploy"
   },
   "dependencies": {
+    "@convex-dev/aggregate": "^0.2.1",
+    "@convex-dev/crons": "^0.2.0",
+    "@convex-dev/rate-limiter": "^0.3.2",
+    "@convex-dev/sharded-counter": "^0.2.0",
+    "@convex-dev/workflow": "^0.3.3",
+    "@convex-dev/workpool": "^0.3.1",
     "@samhoque/convex-posthog": "^0.1.1",
     "convex": "^1.17.0"
   },

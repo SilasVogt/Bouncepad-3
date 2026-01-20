@@ -5,6 +5,7 @@ import {
   SignedIn,
   SignedOut,
   useUser,
+  ClerkLoaded,
 } from "@clerk/tanstack-start";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@bouncepad/backend/convex/_generated/api";
@@ -17,10 +18,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  return (
+    <ClerkLoaded>
+      <HomeContent />
+    </ClerkLoaded>
+  );
+}
+
+function HomeContent() {
   const { user } = useUser();
   const convexStatus = useQuery(api.test.ping);
   const createUser = useMutation(api.users.create);
-  const { isDark, setMode, mode } = useTheme();
+  const { setMode, mode } = useTheme();
 
   // Sync Clerk user to Convex when signed in
   useEffect(() => {
