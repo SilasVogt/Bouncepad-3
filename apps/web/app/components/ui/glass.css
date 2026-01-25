@@ -1,0 +1,443 @@
+/* Glass Effect Utilities - Enhanced 3D Glass Aesthetic */
+/* Strong frosted glass, dimensional depth, luminous borders */
+
+/* ============================================================================
+   BASE GLASS - Core frosted glass with depth
+   ============================================================================ */
+.glass {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--foreground) 8%, var(--background) 60%),
+    color-mix(in srgb, var(--background) 70%, transparent)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--foreground) 10%, transparent),
+    inset 0 -1px 1px color-mix(in srgb, var(--background) 50%, transparent),
+    0 4px 16px -4px rgba(0, 0, 0, 0.3);
+}
+
+/* Intensity variants */
+.glass-subtle {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--foreground) 4%, var(--background) 75%),
+    color-mix(in srgb, var(--background) 80%, transparent)
+  );
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
+
+.glass-strong {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--foreground) 12%, var(--background) 45%),
+    color-mix(in srgb, var(--background) 55%, transparent)
+  );
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow:
+    inset 0 2px 2px color-mix(in srgb, var(--foreground) 15%, transparent),
+    inset 0 -2px 2px color-mix(in srgb, var(--background) 60%, transparent),
+    0 8px 32px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================================
+   GLOW BORDER - Animated gradient outline with outer glow
+   ============================================================================ */
+.glass-glow {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-main) 8%, var(--background) 50%),
+    color-mix(in srgb, var(--background) 65%, transparent)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid transparent;
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--accent-light) 30%, transparent),
+    inset 0 -1px 1px color-mix(in srgb, var(--background) 50%, transparent),
+    0 0 30px -5px color-mix(in srgb, var(--accent-main) 50%, transparent),
+    0 4px 20px -4px rgba(0, 0, 0, 0.3);
+}
+
+.glass-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-main) 80%, transparent),
+    color-mix(in srgb, var(--accent-main) 20%, transparent) 40%,
+    color-mix(in srgb, var(--accent-main) 60%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Outer glow shadow addon */
+.glass-outer-glow {
+  box-shadow:
+    0 0 40px color-mix(in srgb, var(--accent-main) 40%, transparent),
+    0 0 80px color-mix(in srgb, var(--accent-main) 20%, transparent);
+}
+
+/* ============================================================================
+   GLASS BUTTON - 3D elevated button with glass effect
+   ============================================================================ */
+.glass-button {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 10%, var(--background) 50%),
+    color-mix(in srgb, var(--background) 60%, transparent)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 15%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--background) 80%, transparent),
+    0 2px 8px -2px rgba(0, 0, 0, 0.3),
+    0 4px 16px -4px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.glass-button:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 15%, var(--background) 45%),
+    color-mix(in srgb, var(--background) 55%, transparent)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 20%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--background) 90%, transparent),
+    0 4px 12px -2px rgba(0, 0, 0, 0.35),
+    0 8px 24px -4px rgba(0, 0, 0, 0.25);
+}
+
+.glass-button:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 4px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================================
+   GLOW BUTTON - Accent-colored glass with luminous border
+   ============================================================================ */
+.glow-button {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-main) 30%, var(--background) 40%),
+    color-mix(in srgb, var(--accent-main) 15%, var(--background) 50%)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid transparent;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--accent-light) 50%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--accent-dark) 30%, transparent),
+    0 0 20px -5px var(--accent-main),
+    0 4px 16px -4px rgba(0, 0, 0, 0.3);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.glow-button::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--accent-light),
+    var(--accent-main) 50%,
+    var(--accent-dark)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glow-button:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-main) 40%, var(--background) 35%),
+    color-mix(in srgb, var(--accent-main) 25%, var(--background) 45%)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--accent-light) 60%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--accent-dark) 40%, transparent),
+    0 0 30px -3px var(--accent-main),
+    0 0 60px -10px var(--accent-main),
+    0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+.glow-button:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 4px color-mix(in srgb, var(--accent-dark) 50%, transparent),
+    0 0 15px -5px var(--accent-main),
+    0 2px 8px -4px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   SOLID BUTTON - 3D elevated solid color button
+   ============================================================================ */
+.solid-button-3d {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-light) 30%, var(--accent-main)),
+    var(--accent-main) 50%,
+    color-mix(in srgb, var(--accent-dark) 20%, var(--accent-main))
+  );
+  border: 1px solid color-mix(in srgb, var(--accent-dark) 50%, var(--accent-main));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 30%, var(--accent-main)),
+    inset 0 -1px 0 color-mix(in srgb, var(--accent-dark) 40%, var(--accent-main)),
+    0 2px 8px -2px color-mix(in srgb, var(--accent-main) 60%, transparent),
+    0 4px 16px -4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.solid-button-3d:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-light) 40%, var(--accent-main)),
+    var(--accent-main) 50%,
+    color-mix(in srgb, var(--accent-dark) 10%, var(--accent-main))
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 40%, var(--accent-main)),
+    inset 0 -1px 0 color-mix(in srgb, var(--accent-dark) 30%, var(--accent-main)),
+    0 4px 12px -2px color-mix(in srgb, var(--accent-main) 70%, transparent),
+    0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+.solid-button-3d:active {
+  transform: translateY(1px);
+  background: linear-gradient(
+    180deg,
+    var(--accent-main),
+    color-mix(in srgb, var(--accent-dark) 30%, var(--accent-main))
+  );
+  box-shadow:
+    inset 0 2px 4px color-mix(in srgb, var(--accent-dark) 50%, transparent),
+    0 1px 4px -2px color-mix(in srgb, var(--accent-main) 50%, transparent);
+}
+
+/* ============================================================================
+   OUTLINE BUTTON - Subtle glass with visible border
+   ============================================================================ */
+.outline-button-3d {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 5%, transparent),
+    color-mix(in srgb, var(--foreground) 2%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--foreground) 25%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 8%, transparent),
+    0 2px 6px -2px rgba(0, 0, 0, 0.15);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.outline-button-3d:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 10%, transparent),
+    color-mix(in srgb, var(--foreground) 5%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--foreground) 35%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 12%, transparent),
+    0 4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+.outline-button-3d:active {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 8%, transparent),
+    color-mix(in srgb, var(--foreground) 12%, transparent)
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   GLASS INPUT - Frosted input field
+   ============================================================================ */
+.glass-input {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 5%, var(--background) 60%),
+    color-mix(in srgb, var(--background) 70%, transparent)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 0 color-mix(in srgb, var(--foreground) 5%, transparent);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.glass-input:focus {
+  border-color: color-mix(in srgb, var(--accent-main) 70%, transparent);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px color-mix(in srgb, var(--accent-main) 20%, transparent),
+    0 0 20px -5px color-mix(in srgb, var(--accent-main) 40%, transparent);
+  outline: none;
+}
+
+/* ============================================================================
+   GLASS CARD - Card with depth and glass effect
+   ============================================================================ */
+.glass-card {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--foreground) 8%, var(--background) 55%),
+    color-mix(in srgb, var(--background) 65%, transparent) 60%,
+    color-mix(in srgb, var(--foreground) 3%, var(--background) 70%)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--foreground) 10%, transparent),
+    inset 0 -1px 1px color-mix(in srgb, var(--background) 50%, transparent),
+    0 4px 24px -8px rgba(0, 0, 0, 0.3),
+    0 8px 32px -8px rgba(0, 0, 0, 0.2);
+}
+
+.glass-card-glow {
+  position: relative;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent-main) 10%, var(--background) 50%),
+    color-mix(in srgb, var(--background) 60%, transparent) 60%,
+    color-mix(in srgb, var(--accent-main) 5%, var(--background) 65%)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid transparent;
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--accent-light) 25%, transparent),
+    inset 0 -1px 1px color-mix(in srgb, var(--background) 50%, transparent),
+    0 0 40px -10px color-mix(in srgb, var(--accent-main) 50%, transparent),
+    0 8px 32px -8px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent-main) 70%, transparent),
+    color-mix(in srgb, var(--accent-main) 15%, transparent) 50%,
+    color-mix(in srgb, var(--accent-main) 50%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   GLASS DOCK - Floating glass container
+   ============================================================================ */
+.glass-dock {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--foreground) 10%, var(--background) 60%),
+    color-mix(in srgb, var(--background) 75%, transparent)
+  );
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 10%, transparent),
+    0 -4px 24px -4px rgba(0, 0, 0, 0.2),
+    0 8px 32px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   TOAST ANIMATIONS
+   ============================================================================ */
+@keyframes slideUp {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Timer progress bar - shrinks from full width to 0 */
+@keyframes timerShrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Viewport edge flash - fades in then out */
+@keyframes edgeFlash {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

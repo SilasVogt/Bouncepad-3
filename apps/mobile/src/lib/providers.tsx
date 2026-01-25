@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { View, Text, ActivityIndicator } from "react-native";
+import { ClerkProvider, ClerkLoaded, ClerkLoading, useAuth } from "@clerk/clerk-expo";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import Constants from "expo-constants";
 import { tokenCache } from "./clerk";
 import { convex } from "./convex";
 import { ThemeProvider } from "./theme";
@@ -11,8 +11,21 @@ interface ProvidersProps {
   children: ReactNode;
 }
 
-const clerkPublishableKey = Constants.expoConfig?.extra
-  ?.clerkPublishableKey as string | undefined;
+// In Expo SDK 50+, EXPO_PUBLIC_* env vars are available directly via process.env
+const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+// Debug logging
+console.log("🔑 Clerk key exists:", !!clerkPublishableKey);
+console.log("📦 Convex client exists:", !!convex);
+
+function LoadingScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#0a0a0a" }}>
+      <ActivityIndicator size="large" color="#3b82f6" />
+      <Text style={{ color: "#fff", marginTop: 16 }}>Loading...</Text>
+    </View>
+  );
+}
 
 export function Providers({ children }: ProvidersProps) {
   // ThemeProvider and PlayerProvider are always available
@@ -24,11 +37,15 @@ export function Providers({ children }: ProvidersProps) {
 
   // If Clerk or Convex is not configured, just render with core providers only
   if (!clerkPublishableKey || !convex) {
+    console.log("⚠️ Running without Clerk/Convex - missing config");
     return coreProviders;
   }
 
   return (
     <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
+      <ClerkLoading>
+        <LoadingScreen />
+      </ClerkLoading>
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
           {coreProviders}

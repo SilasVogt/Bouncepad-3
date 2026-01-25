@@ -1,6 +1,7 @@
 import { Text, View, Pressable, ScrollView } from "react-native";
 import { SignedIn, SignedOut, useUser, useAuth, useOAuth } from "@clerk/clerk-expo";
 import { useQuery, useMutation } from "convex/react";
+import { Link } from "expo-router";
 import { api } from "@bouncepad/backend/convex/_generated/api";
 import { useEffect } from "react";
 import * as WebBrowser from "expo-web-browser";
@@ -122,6 +123,18 @@ export default function Home() {
         </Text>
         <AccentColorPicker />
       </View>
+
+      {/* Design System Showcase Link */}
+      <Link href="/showcase" asChild>
+        <Pressable
+          style={{ backgroundColor: colors.accent.main }}
+          className="p-4 rounded-2xl mb-6 items-center"
+        >
+          <Text className="text-white font-semibold text-lg">
+            View Design System Showcase
+          </Text>
+        </Pressable>
+      </Link>
 
       <Text style={{ color: colors.foreground }} className="text-lg font-semibold mb-4">
         Scroll to see liquid glass effect:

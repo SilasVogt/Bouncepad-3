@@ -26,6 +26,14 @@ export const Route = createRootRoute({
     ],
     links: [
       {
+        rel: "preconnect",
+        href: "https://fonts.bunny.net",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.bunny.net/css?family=instrument-serif:400,400i|inter:400,500,600,700",
+      },
+      {
         rel: "stylesheet",
         href: appCss,
       },
