@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShowcaseRouteImport } from './routes/showcase'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as FollowingRouteImport } from './routes/following'
 import { Route as ExploreRouteImport } from './routes/explore'
@@ -21,6 +22,11 @@ import { Route as AdminHiveRouteImport } from './routes/admin.hive'
 const ShowcaseRoute = ShowcaseRouteImport.update({
   id: '/showcase',
   path: '/showcase',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/following': typeof FollowingRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/following': typeof FollowingRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/following': typeof FollowingRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/following'
     | '/search'
+    | '/settings'
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/following'
     | '/search'
+    | '/settings'
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/following'
     | '/search'
+    | '/settings'
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   FollowingRoute: typeof FollowingRoute
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   ShowcaseRoute: typeof ShowcaseRoute
   AdminHiveRoute: typeof AdminHiveRoute
   EpisodeIdRoute: typeof EpisodeIdRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/showcase'
       fullPath: '/showcase'
       preLoaderRoute: typeof ShowcaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   FollowingRoute: FollowingRoute,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   ShowcaseRoute: ShowcaseRoute,
   AdminHiveRoute: AdminHiveRoute,
   EpisodeIdRoute: EpisodeIdRoute,

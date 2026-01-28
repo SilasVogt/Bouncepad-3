@@ -1,5 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Compass, UserPlus, Search } from "lucide-react";
+import { Home, Compass, UserPlus, Search, User } from "lucide-react";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  useUser,
+  ClerkLoaded,
+} from "@clerk/tanstack-start";
+import { useQuery } from "convex/react";
+import { api } from "@bouncepad/backend/convex/_generated/api";
+import { Avatar } from "~/components/ui";
 
 interface NavItem {
   path: string;
@@ -13,6 +23,104 @@ const navItems: NavItem[] = [
   { path: "/following", label: "Following", icon: <UserPlus size={20} /> },
   { path: "/search", label: "Search", icon: <Search size={20} /> },
 ];
+
+function DesktopUserButton() {
+  const { user } = useUser();
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = currentPath === "/settings";
+  const convexUser = useQuery(
+    api.users.getByClerkId,
+    user?.id ? { clerkId: user.id } : "skip"
+  );
+
+  const label = convexUser?.username
+    ? `@${convexUser.username}`
+    : user?.fullName || "Profile";
+
+  return (
+    <ClerkLoaded>
+      <SignedIn>
+        <Link
+          to="/settings"
+          className={`
+            flex items-center gap-2 px-4 h-10 rounded-lg font-medium text-sm
+            [transform:none!important]
+            ${isActive
+              ? "solid-button-3d text-white"
+              : "glass-button text-[var(--foreground)]"
+            }
+          `}
+        >
+          <span className="shrink-0 flex items-center">
+            {user?.imageUrl ? (
+              <Avatar src={user.imageUrl} fallback="U" size="xs" />
+            ) : (
+              <User size={20} />
+            )}
+          </span>
+          <span className="truncate">{label}</span>
+        </Link>
+      </SignedIn>
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button
+            className={`
+              flex items-center gap-2 px-4 h-10 rounded-lg font-medium text-sm
+              [transform:none!important] w-full cursor-pointer
+              glass-button text-[var(--foreground)]
+            `}
+          >
+            <span className="shrink-0"><User size={20} /></span>
+            <span>Sign In</span>
+          </button>
+        </SignInButton>
+      </SignedOut>
+    </ClerkLoaded>
+  );
+}
+
+function MobileUserButton() {
+  const { user } = useUser();
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = currentPath === "/settings";
+
+  return (
+    <ClerkLoaded>
+      <SignedIn>
+        <Link
+          to="/settings"
+          className={`
+            flex flex-col items-center gap-1 px-4 py-3 rounded-lg
+            transition-colors duration-150
+            ${isActive
+              ? "text-accent"
+              : "text-[var(--muted)] hover:text-[var(--foreground)]"
+            }
+          `}
+        >
+          {user?.imageUrl ? (
+            <Avatar src={user.imageUrl} fallback="U" size="xs" />
+          ) : (
+            <User size={20} />
+          )}
+          <span className="text-xs font-medium">Profile</span>
+        </Link>
+      </SignedIn>
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button
+            className="flex flex-col items-center gap-1 px-4 py-3 rounded-lg
+              transition-colors duration-150
+              text-[var(--muted)] hover:text-[var(--foreground)] cursor-pointer"
+          >
+            <User size={20} />
+            <span className="text-xs font-medium">Sign In</span>
+          </button>
+        </SignInButton>
+      </SignedOut>
+    </ClerkLoaded>
+  );
+}
 
 export function Navigation() {
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
@@ -49,6 +157,7 @@ export function Navigation() {
               </Link>
             );
           })}
+          <DesktopUserButton />
         </div>
       </nav>
 
@@ -75,6 +184,7 @@ export function Navigation() {
               </Link>
             );
           })}
+          <MobileUserButton />
         </div>
       </nav>
     </>

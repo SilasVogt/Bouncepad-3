@@ -155,6 +155,7 @@ export default defineSchema({
     clerkId: v.string(),
     email: v.string(),
     name: v.optional(v.string()),
+    username: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     createdAt: v.number(),
 
