@@ -61,6 +61,7 @@ function SettingsContent() {
   const [username, setUsername] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   // Initialize username from convex user
   useEffect(() => {
@@ -69,16 +70,44 @@ function SettingsContent() {
     }
   }, [convexUser?.username]);
 
+  const validateUsername = (value: string): string | null => {
+    const clean = value.replace(/^@/, "").trim();
+    if (clean.length === 0) return null;
+    if (clean.length < 3) return "Username must be at least 3 characters";
+    if (clean.length > 23) return "Username must be 23 characters or fewer";
+    if (!/^[a-zA-Z0-9_-]+$/.test(clean)) {
+      return "Only letters, numbers, underscores, and hyphens allowed";
+    }
+    return null;
+  };
+
+  const handleUsernameChange = (value: string) => {
+    // Strip @ prefix if typed, and disallow spaces
+    const clean = value.replace(/^@/, "").replace(/\s/g, "");
+    setUsername(clean);
+    setError("");
+    setSaved(false);
+  };
+
   const handleSaveUsername = async () => {
-    if (!user?.id || !username.trim()) return;
+    if (!user?.id) return;
+    const clean = username.trim();
+    const validationError = validateUsername(clean);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setSaving(true);
+    setError("");
     try {
       await updateUsername({
         clerkId: user.id,
-        username: username.trim().replace(/^@/, ""),
+        username: clean,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to update username");
     } finally {
       setSaving(false);
     }
@@ -119,13 +148,15 @@ function SettingsContent() {
                 label="Public Username"
                 placeholder="username"
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={handleUsernameChange}
                 leftElement={
                   <span className="text-[var(--muted)] text-sm font-medium">@</span>
                 }
+                error={!!error}
+                errorMessage={error}
               />
               <Text variant="caption" muted>
-                This is your public identity. Other users will see this on your profile and activity.
+                3–23 characters. Letters, numbers, underscores, and hyphens only.
               </Text>
               <HStack gap="sm" align="center">
                 <Button
@@ -133,7 +164,7 @@ function SettingsContent() {
                   size="sm"
                   onPress={handleSaveUsername}
                   loading={saving}
-                  disabled={saving}
+                  disabled={saving || !username.trim() || !!validateUsername(username)}
                 >
                   {saved ? "Saved!" : "Save"}
                 </Button>

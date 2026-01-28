@@ -155,7 +155,8 @@ export default defineSchema({
     clerkId: v.string(),
     email: v.string(),
     name: v.optional(v.string()),
-    username: v.optional(v.string()),
+    username: v.optional(v.string()), // Display casing (e.g. "SilasOnLinux")
+    usernameLower: v.optional(v.string()), // Lowercase for case-insensitive lookups
     imageUrl: v.optional(v.string()),
     createdAt: v.number(),
 
@@ -192,7 +193,9 @@ export default defineSchema({
         })
       )
     ),
-  }).index("by_clerk_id", ["clerkId"]),
+  })
+    .index("by_clerk_id", ["clerkId"])
+    .index("by_username", ["usernameLower"]),
 
   // User podcast subscriptions
   follows: defineTable({

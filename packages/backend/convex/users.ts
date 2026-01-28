@@ -66,7 +66,6 @@ export const update = mutation({
 
     const updates: Record<string, unknown> = {};
     if (args.name !== undefined) updates.name = args.name;
-    if (args.username !== undefined) updates.username = args.username;
     if (args.imageUrl !== undefined) updates.imageUrl = args.imageUrl;
 
     return await ctx.db.patch(user._id, updates);
@@ -80,6 +79,21 @@ export const updateUsername = mutation({
     username: v.string(),
   },
   handler: async (ctx, args) => {
+    const username = args.username.trim();
+    const usernameLower = username.toLowerCase();
+
+    // Validate length
+    if (username.length < 3 || username.length > 23) {
+      throw new Error("Username must be between 3 and 23 characters");
+    }
+
+    // Validate characters: letters, numbers, underscores, hyphens
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      throw new Error(
+        "Username can only contain letters, numbers, underscores, and hyphens"
+      );
+    }
+
     const user = await ctx.db
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
@@ -89,7 +103,17 @@ export const updateUsername = mutation({
       throw new Error("User not found");
     }
 
-    return await ctx.db.patch(user._id, { username: args.username });
+    // Check uniqueness (case-insensitive)
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("usernameLower", usernameLower))
+      .unique();
+
+    if (existing && existing._id !== user._id) {
+      throw new Error("Username is already taken");
+    }
+
+    return await ctx.db.patch(user._id, { username, usernameLower });
   },
 });
 
