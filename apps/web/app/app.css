@@ -71,6 +71,11 @@ body {
   --tw-ring-color: var(--accent-main);
 }
 
+/* Skeleton pulse animation — defined here so it works before Tailwind processes */
+@keyframes pulse {
+  50% { opacity: 0.5; }
+}
+
 /* Navigation styles */
 nav {
   transition: background-color 0.2s;

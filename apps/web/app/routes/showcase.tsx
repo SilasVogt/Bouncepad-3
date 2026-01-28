@@ -61,7 +61,7 @@ function PodcastCard({
         transition-all duration-300 ease-out
         hover:shadow-[0_0_30px_-5px_var(--accent-main)]
         group
-        ${isLive ? "glass-card-glow" : "glass-card"}
+        ${isLive || isScheduled ? "glass-card-glow" : "glass-card"}
       `}
     >
       {/* Image container */}
@@ -87,7 +87,7 @@ function PodcastCard({
               LIVE
             </Button>
           ) : isScheduled ? (
-            <Button variant="outline" size="sm">
+            <Button variant="glow" size="sm">
               SCHEDULED
             </Button>
           ) : (
