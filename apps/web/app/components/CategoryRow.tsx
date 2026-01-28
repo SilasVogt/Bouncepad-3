@@ -59,7 +59,7 @@ function PodcastCardSkeleton() {
 
 export function CategoryRow({ name, podcasts, onFollow, onPodcastPress }: CategoryRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(podcasts.length);
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -68,14 +68,13 @@ export function CategoryRow({ name, podcasts, onFollow, onPodcastPress }: Catego
     setMounted(true);
   }, []);
 
-  // Determine if there are more cards than fit in one row
+  // Calculate how many cards fully fit in one row
   useLayoutEffect(() => {
     const calculate = () => {
       if (containerRef.current) {
-        // Subtract glow padding from available width
         const containerWidth = containerRef.current.offsetWidth - GLOW_PAD * 2;
-        const count = Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP));
-        setHasMore(podcasts.length > Math.max(1, count));
+        const count = Math.max(1, Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP)));
+        setVisibleCount(count);
       }
     };
 
@@ -86,14 +85,17 @@ export function CategoryRow({ name, podcasts, onFollow, onPodcastPress }: Catego
     const calculate = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth - GLOW_PAD * 2;
-        const count = Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP));
-        setHasMore(podcasts.length > Math.max(1, count));
+        const count = Math.max(1, Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP)));
+        setVisibleCount(count);
       }
     };
 
     window.addEventListener("resize", calculate);
     return () => window.removeEventListener("resize", calculate);
   }, [podcasts.length]);
+
+  const hasMore = podcasts.length > visibleCount;
+  const displayedPodcasts = isExpanded ? podcasts : podcasts.slice(0, visibleCount);
 
   return (
     <div style={{ marginBottom: 32 }}>
@@ -134,21 +136,34 @@ export function CategoryRow({ name, podcasts, onFollow, onPodcastPress }: Catego
             flexWrap: isExpanded ? "wrap" : "nowrap",
           }}
         >
-          {podcasts.map((podcast) =>
-            mounted ? (
-              <div key={podcast.id} style={{ width: CARD_WIDTH, flexShrink: 0 }}>
-                <PodcastCard
-                  podcast={podcast}
-                  onFollow={onFollow}
-                  onPress={onPodcastPress}
-                />
-              </div>
-            ) : (
-              <PodcastCardSkeleton key={podcast.id} />
-            )
-          )}
+          {mounted
+            ? displayedPodcasts.map((podcast) => (
+                <div key={podcast.id} style={{ width: CARD_WIDTH, flexShrink: 0 }}>
+                  <PodcastCard
+                    podcast={podcast}
+                    onFollow={onFollow}
+                    onPress={onPodcastPress}
+                  />
+                </div>
+              ))
+            : podcasts.map((podcast) => (
+                <PodcastCardSkeleton key={podcast.id} />
+              ))
+          }
         </div>
       </div>
+
+      {/* Bottom "Show Less" so users don't have to scroll back up */}
+      {isExpanded && hasMore && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="flex items-center gap-1 text-sm text-[var(--muted)] hover:text-accent transition-colors"
+          >
+            Show Less <ChevronUp size={18} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
