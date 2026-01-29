@@ -12,6 +12,7 @@ import { api } from "@bouncepad/backend/convex/_generated/api";
 import { useEffect } from "react";
 import { AccentColorPicker } from "~/components/AccentColorPicker";
 import { useTheme } from "~/lib/theme";
+import { Button, Card, Text, VStack, HStack } from "~/components/ui";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -57,54 +58,49 @@ function HomeContent() {
       <div className="mt-8">
         <SignedOut>
           <SignInButton mode="modal">
-            <button className="px-6 py-3 bg-accent text-white rounded-lg font-medium hover:opacity-90 transition-opacity">
-              Sign In
-            </button>
+            <Button variant="solid" size="lg">Sign In</Button>
           </SignInButton>
         </SignedOut>
 
         <SignedIn>
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-accent">
+          <VStack gap="md" align="center">
+            <Text variant="body" accent>
               Signed in as {user?.emailAddresses[0]?.emailAddress}
-            </p>
+            </Text>
             <SignOutButton>
-              <button className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
-                Sign Out
-              </button>
+              <Button variant="outline" size="lg">Sign Out</Button>
             </SignOutButton>
-          </div>
+          </VStack>
         </SignedIn>
       </div>
 
       {/* Theme Settings */}
-      <div className="mt-12 p-6 rounded-xl border border-[var(--border)] bg-[var(--background)]">
-        <h2 className="text-lg font-semibold mb-4">Theme Settings</h2>
+      <Card variant="glass" padding="lg" className="mt-12">
+        <VStack gap="md">
+          <Text variant="h4">Theme Settings</Text>
 
-        <div className="mb-4">
-          <p className="text-sm text-[var(--muted)] mb-2">Mode</p>
-          <div className="flex gap-2">
-            {(["system", "light", "dark"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ${
-                  mode === m
-                    ? "bg-accent text-white"
-                    : "bg-[var(--border)] hover:bg-[var(--muted)]"
-                }`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
+          <VStack gap="sm">
+            <Text variant="label" muted>Mode</Text>
+            <HStack gap="sm">
+              {(["system", "light", "dark"] as const).map((m) => (
+                <Button
+                  key={m}
+                  variant={mode === m ? "solid" : "glass"}
+                  size="sm"
+                  onPress={() => setMode(m)}
+                >
+                  {m.charAt(0).toUpperCase() + m.slice(1)}
+                </Button>
+              ))}
+            </HStack>
+          </VStack>
 
-        <div>
-          <p className="text-sm text-[var(--muted)] mb-2">Accent Color</p>
-          <AccentColorPicker />
-        </div>
-      </div>
+          <VStack gap="sm">
+            <Text variant="label" muted>Accent Color</Text>
+            <AccentColorPicker />
+          </VStack>
+        </VStack>
+      </Card>
     </div>
   );
 }

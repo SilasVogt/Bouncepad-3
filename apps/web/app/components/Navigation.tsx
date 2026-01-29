@@ -46,7 +46,7 @@ function DesktopUserButton() {
             flex items-center gap-2 px-4 h-10 rounded-lg font-medium text-sm
             [transform:none!important]
             ${isActive
-              ? "solid-button-3d text-white"
+              ? "solid-button-3d text-[var(--accent-text)]"
               : "glass-button text-[var(--foreground)]"
             }
           `}
@@ -147,7 +147,7 @@ export function Navigation() {
                   flex items-center gap-2 px-4 h-10 rounded-lg font-medium text-sm
                   [transform:none!important]
                   ${isActive
-                    ? "solid-button-3d text-white"
+                    ? "solid-button-3d text-[var(--accent-text)]"
                     : "glass-button text-[var(--foreground)]"
                   }
                 `}
