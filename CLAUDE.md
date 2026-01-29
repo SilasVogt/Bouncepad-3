@@ -1,5 +1,45 @@
 # Bouncepad Development Guidelines
 
+## Git Workflow & Branching Strategy
+
+**IMPORTANT**: Claude must follow this branching workflow strictly.
+
+### Branch Structure
+
+| Branch | Purpose | Deployment | Environment |
+|--------|---------|------------|-------------|
+| `feature/*` | Active development | Preview deployments on Cloudflare Workers (on push) | Dev keys |
+| `develop` | Default branch, integration | Cloudflare Workers (admin-only, behind login) | Convex dev + Clerk test keys |
+| `preview` | Tested features for premium users | preview.bouncepad.live | Clerk production keys |
+| `main` | Production | bouncepad.live | Full production |
+
+### Workflow Rules
+
+1. **Always use feature branches** for new work. Never commit directly to `develop`, `preview`, or `main`.
+
+2. **Before starting any new feature or topic**:
+   - Ensure current work is committed and pushed
+   - Create a new branch: `git checkout -b feature/descriptive-name`
+
+3. **When the user switches topics without creating a new branch**, Claude MUST remind them:
+   > "Before we switch to this new topic, let's commit and push your current changes and create a new feature branch. What should we name this feature?"
+
+4. **PR Flow**:
+   - Feature branches → PR to `develop` (reviewed by CodeRabbit/Greptile)
+   - Multiple tested features in `develop` → PR to `preview`
+   - Stable `preview` → PR to `main`
+
+5. **Commit frequently** with meaningful messages. Don't let work pile up uncommitted.
+
+### Current Feature Tracking
+
+When the user tells Claude what feature they're working on, Claude should:
+- Confirm they're on the correct feature branch
+- Remember the feature context throughout the session
+- Prompt to commit/push before ending session or switching contexts
+
+---
+
 ## UI Component System
 
 **IMPORTANT**: Always use the established UI component library. Do NOT create inline components or use raw HTML/Tailwind when a component exists.
