@@ -1,0 +1,10 @@
+# Cloudflare Workers local development environment variables
+# Copy this file to .dev.vars and fill in your values
+# .dev.vars is gitignored and should never be committed
+
+# Clerk (use development/test keys for local dev)
+CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Convex (use development deployment URL)
+CONVEX_URL=https://your-dev-deployment.convex.cloud

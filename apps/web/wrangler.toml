@@ -1,0 +1,33 @@
+# Bouncepad Web - Cloudflare Workers Configuration
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "bouncepad-web"
+compatibility_date = "2025-01-29"
+compatibility_flags = ["nodejs_compat"]
+main = "@tanstack/react-start/server-entry"
+
+# Enable preview URLs for feature branch deployments
+preview_urls = true
+
+[observability]
+enabled = true
+
+# Environment: develop branch
+# Deployed to: bouncepad-web-dev.<subdomain>.workers.dev
+# Uses: Convex dev deployment + Clerk test keys
+[env.dev]
+name = "bouncepad-web-dev"
+
+# Environment: preview branch
+# Deployed to: preview.bouncepad.live
+# Uses: Clerk production keys (Convex TBD)
+[env.preview]
+name = "bouncepad-web-preview"
+# routes = [{ pattern = "preview.bouncepad.live", custom_domain = true }]
+
+# Environment: main/production
+# Deployed to: bouncepad.live
+# Uses: Full production config
+[env.production]
+name = "bouncepad-web"
+# routes = [{ pattern = "bouncepad.live", custom_domain = true }]

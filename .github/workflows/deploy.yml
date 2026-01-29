@@ -1,0 +1,94 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+      - preview
+      - develop
+      - 'feature/**'
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build web app
+        working-directory: apps/web
+        run: bun run build
+        env:
+          # Clerk keys - set based on environment
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ github.ref == 'refs/heads/main' && secrets.CLERK_PUBLISHABLE_KEY_PROD || github.ref == 'refs/heads/preview' && secrets.CLERK_PUBLISHABLE_KEY_PROD || secrets.CLERK_PUBLISHABLE_KEY_DEV }}
+          # Convex URL - set based on environment
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.CONVEX_URL_PROD || secrets.CONVEX_URL_DEV }}
+
+      # Deploy feature branches with preview alias
+      - name: Deploy Feature Branch Preview
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        working-directory: apps/web
+        run: |
+          # Extract branch name and sanitize for alias (lowercase, alphanumeric and dashes only)
+          BRANCH_NAME="${GITHUB_REF#refs/heads/feature/}"
+          ALIAS=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+          echo "Deploying with preview alias: $ALIAS"
+          bunx wrangler versions upload --preview-alias "$ALIAS"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Deploy develop branch to dev environment
+      - name: Deploy Develop
+        if: github.ref == 'refs/heads/develop'
+        working-directory: apps/web
+        run: bunx wrangler deploy --env dev
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Deploy preview branch to preview environment
+      - name: Deploy Preview
+        if: github.ref == 'refs/heads/preview'
+        working-directory: apps/web
+        run: bunx wrangler deploy --env preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Deploy main branch to production
+      - name: Deploy Production
+        if: github.ref == 'refs/heads/main'
+        working-directory: apps/web
+        run: bunx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Output deployment URL
+      - name: Output Deployment Info
+        run: |
+          if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
+            BRANCH_NAME="${GITHUB_REF#refs/heads/feature/}"
+            ALIAS=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+            echo "::notice::Preview URL: https://${ALIAS}-bouncepad-web.<your-subdomain>.workers.dev"
+          elif [[ "$GITHUB_REF" == "refs/heads/develop" ]]; then
+            echo "::notice::Dev URL: https://bouncepad-web-dev.<your-subdomain>.workers.dev"
+          elif [[ "$GITHUB_REF" == "refs/heads/preview" ]]; then
+            echo "::notice::Preview URL: https://preview.bouncepad.live (once custom domain configured)"
+          elif [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+            echo "::notice::Production URL: https://bouncepad.live (once custom domain configured)"
+          fi
