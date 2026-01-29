@@ -20,7 +20,7 @@ const variantStyles = {
       bg-gradient-to-b from-[color-mix(in_srgb,var(--accent-light)_30%,var(--accent-main))] via-[var(--accent-main)] to-[color-mix(in_srgb,var(--accent-dark)_20%,var(--accent-main))]
       border-[color-mix(in_srgb,var(--accent-dark)_50%,var(--accent-main))]
       shadow-[inset_0_1px_0_color-mix(in_srgb,white_30%,var(--accent-main)),inset_0_-1px_0_color-mix(in_srgb,var(--accent-dark)_40%,var(--accent-main)),0_2px_8px_-2px_color-mix(in_srgb,var(--accent-main)_60%,transparent)]
-      text-white
+      text-[var(--accent-text)]
     `,
     inactive: "bg-transparent border-transparent shadow-none text-[var(--foreground)] hover:bg-[var(--foreground)]/10",
   },

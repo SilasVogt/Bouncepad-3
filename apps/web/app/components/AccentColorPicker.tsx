@@ -10,14 +10,28 @@ interface AccentColorPickerProps {
   variant?: "full" | "gnome";
 }
 
+// Get display colors for a color key, handling "contrast" specially
+function getDisplayColors(key: AccentColorKey, isDark: boolean) {
+  if (key === "contrast") {
+    // High contrast: white in dark mode, black in light mode
+    return {
+      name: "High Contrast",
+      200: isDark ? "#d4d4d4" : "#525252",
+      500: isDark ? "#fafafa" : "#171717",
+      800: isDark ? "#a3a3a3" : "#0a0a0a",
+    };
+  }
+  return accentColors[key];
+}
+
 export function AccentColorPicker({ variant = "gnome" }: AccentColorPickerProps) {
-  const { accentColor, setAccentColor } = useTheme();
+  const { accentColor, setAccentColor, isDark } = useTheme();
   const colorKeys = variant === "gnome" ? gnomeAccentColorKeys : accentColorKeys;
 
   return (
     <div className="flex flex-wrap gap-2">
       {colorKeys.map((key) => {
-        const color = accentColors[key];
+        const color = getDisplayColors(key, isDark);
         const isSelected = key === accentColor;
 
         return (

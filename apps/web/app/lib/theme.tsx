@@ -94,6 +94,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.style.setProperty("--accent-light", colors.accent.light);
     document.documentElement.style.setProperty("--accent-main", colors.accent.main);
     document.documentElement.style.setProperty("--accent-dark", colors.accent.dark);
+    document.documentElement.style.setProperty("--accent-text", colors.accent.text);
     document.documentElement.style.setProperty("--background", colors.background);
     document.documentElement.style.setProperty("--foreground", colors.foreground);
     document.documentElement.style.setProperty("--muted", colors.muted);
@@ -174,6 +175,7 @@ export function ThemeProviderBasic({ children }: { children: ReactNode }) {
     document.documentElement.style.setProperty("--accent-light", colors.accent.light);
     document.documentElement.style.setProperty("--accent-main", colors.accent.main);
     document.documentElement.style.setProperty("--accent-dark", colors.accent.dark);
+    document.documentElement.style.setProperty("--accent-text", colors.accent.text);
     document.documentElement.style.setProperty("--background", colors.background);
     document.documentElement.style.setProperty("--foreground", colors.foreground);
     document.documentElement.style.setProperty("--muted", colors.muted);

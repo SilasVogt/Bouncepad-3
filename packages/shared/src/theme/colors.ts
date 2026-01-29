@@ -110,13 +110,20 @@ export const accentColors = {
     500: "#64748b",
     800: "#1e293b",
   },
+  // Special "high contrast" - dynamic based on theme mode
+  contrast: {
+    name: "High Contrast",
+    200: "#d4d4d4", // Placeholder, overridden dynamically
+    500: "#171717", // Black for light mode (overridden for dark)
+    800: "#525252",
+  },
 } as const;
 
 export type AccentColorKey = keyof typeof accentColors;
 
 export const accentColorKeys = Object.keys(accentColors) as AccentColorKey[];
 
-// GNOME-style simplified color palette (9 colors)
+// GNOME-style simplified color palette (10 colors)
 export const gnomeAccentColorKeys: AccentColorKey[] = [
   "blue",
   "teal",
@@ -127,9 +134,35 @@ export const gnomeAccentColorKeys: AccentColorKey[] = [
   "pink",
   "purple",
   "slate",
+  "contrast",
 ];
 
 export const defaultAccentColor: AccentColorKey = "blue";
+
+// Text color for solid accent backgrounds (white for dark colors, black for light colors)
+// Only blue, indigo, violet, purple are dark enough for white text
+// "contrast" is special - handled dynamically in getThemeColors
+export const accentTextColors: Record<AccentColorKey, "white" | "black" | "dynamic"> = {
+  red: "white",
+  orange: "black",
+  amber: "black",
+  yellow: "black",
+  lime: "black",
+  green: "black",
+  emerald: "black",
+  teal: "black",
+  cyan: "black",
+  sky: "black",
+  blue: "white",
+  indigo: "white",
+  violet: "white",
+  purple: "white",
+  fuchsia: "black",
+  pink: "white",
+  rose: "black",
+  slate: "black",
+  contrast: "dynamic",
+};
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -138,6 +171,7 @@ export interface ThemeColors {
     light: string;  // 200
     main: string;   // 500
     dark: string;   // 800
+    text: string;   // white or black for contrast on solid backgrounds
   };
   background: string;
   foreground: string;
@@ -149,16 +183,38 @@ export function getThemeColors(
   accentKey: AccentColorKey,
   isDark: boolean
 ): ThemeColors {
+  const background = isDark ? "#0a0a0a" : "#fafafa";
+  const foreground = isDark ? "#ededed" : "#171717";
+
+  // Handle "contrast" specially - it inverts based on theme
+  if (accentKey === "contrast") {
+    return {
+      accent: {
+        light: isDark ? "#d4d4d4" : "#525252",
+        main: isDark ? "#fafafa" : "#171717",
+        dark: isDark ? "#a3a3a3" : "#0a0a0a",
+        text: isDark ? "#000000" : "#ffffff",
+      },
+      background,
+      foreground,
+      muted: isDark ? "#737373" : "#a3a3a3",
+      border: isDark ? "#262626" : "#e5e5e5",
+    };
+  }
+
   const accent = accentColors[accentKey];
+  const textColorSetting = accentTextColors[accentKey];
+  const textColor = textColorSetting === "white" ? "#ffffff" : "#000000";
 
   return {
     accent: {
       light: accent[200],
       main: accent[500],
       dark: accent[800],
+      text: textColor,
     },
-    background: isDark ? "#0a0a0a" : "#fafafa",
-    foreground: isDark ? "#ededed" : "#171717",
+    background,
+    foreground,
     muted: isDark ? "#737373" : "#a3a3a3",
     border: isDark ? "#262626" : "#e5e5e5",
   };

@@ -7,7 +7,7 @@ const sizeClasses = {
 
 const variantClasses = {
   default: `
-    bg-accent text-white
+    bg-accent text-[var(--accent-text)]
   `,
   outline: `
     bg-transparent text-accent

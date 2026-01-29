@@ -19,7 +19,7 @@ const spinnerSizes = {
 
 const variantClasses = {
   solid: `
-    solid-button-3d text-white
+    solid-button-3d text-[var(--accent-text)]
   `,
   outline: `
     outline-button-3d text-[var(--foreground)]
@@ -79,7 +79,7 @@ export function Button({
       `}
     >
       {loading ? (
-        <Spinner size={spinnerSizes[size]} color={variant === "solid" ? "#fff" : undefined} />
+        <Spinner size={spinnerSizes[size]} color={variant === "solid" ? "var(--accent-text)" : undefined} />
       ) : (
         <>
           {leftIcon && <span className="shrink-0 inline-flex items-center justify-center">{leftIcon}</span>}
