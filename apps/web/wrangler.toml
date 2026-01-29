@@ -13,10 +13,11 @@ preview_urls = true
 enabled = true
 
 # Environment: develop branch
-# Deployed to: bouncepad-web-dev.<subdomain>.workers.dev
+# Deployed to: new.bouncepad.live
 # Uses: Convex dev deployment + Clerk test keys
 [env.dev]
 name = "bouncepad-web-dev"
+routes = [{ pattern = "new.bouncepad.live", custom_domain = true }]
 
 # Environment: preview branch
 # Deployed to: preview.bouncepad.live
