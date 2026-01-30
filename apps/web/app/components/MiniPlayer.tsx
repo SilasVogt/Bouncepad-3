@@ -162,7 +162,7 @@ export function MiniPlayer() {
               muted
             />
           ) : imageUrl ? (
-            <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+            <img src={imageUrl} alt={episode.title || "Episode cover"} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-[var(--border)]">
               <Play size={32} className="text-[var(--muted)]" />
@@ -177,6 +177,7 @@ export function MiniPlayer() {
           {/* Close button */}
           <button
             onClick={handleClose}
+            aria-label="Close mini player"
             className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
           >
             <X size={14} className="text-white" />
