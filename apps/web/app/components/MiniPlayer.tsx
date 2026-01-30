@@ -201,7 +201,13 @@ export function MiniPlayer() {
             onPress={togglePlayPause}
           />
 
-          <div className="flex-1 min-w-0 cursor-pointer" onClick={handleClick}>
+          <div
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={handleClick}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+            role="button"
+            tabIndex={0}
+          >
             <Text variant="caption" weight="medium" numberOfLines={1} className="hover:text-accent transition-colors">
               {episode.title}
             </Text>

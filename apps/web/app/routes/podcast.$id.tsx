@@ -89,7 +89,8 @@ function PodcastPageRoute() {
   };
 
   const handleViewPersonProfile = (personId: string) => {
-    // Convert person name to slug (e.g., "Chris Fisher" -> "chris_fisher")
+    // TODO: In production, use person.slug from the data source instead of deriving
+    // from name. Current approach is fragile with special characters, diacritics, etc.
     const person = mockPodcast.people.find(p => p.id === personId);
     if (person) {
       const slug = person.name.toLowerCase().replace(/\s+/g, "_");
