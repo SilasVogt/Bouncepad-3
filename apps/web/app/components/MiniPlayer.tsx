@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Play, Pause, X, Maximize2 } from "lucide-react";
 import Hls from "hls.js";
 import { usePlayer } from "~/lib/player-context";
+import { Card, IconButton, Text, HStack } from "~/components/ui";
 
 function formatTime(seconds: number): string {
   if (!seconds || isNaN(seconds)) return "0:00";
@@ -146,70 +147,77 @@ export function MiniPlayer() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-72 rounded-2xl overflow-hidden shadow-2xl bg-[var(--background)] border border-[var(--border)]">
-      {/* Video/Cover area */}
-      <div
-        className="relative aspect-video bg-black cursor-pointer group"
-        onClick={handleClick}
-      >
-        {showVideo ? (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-contain"
-            playsInline
-            muted
-          />
-        ) : imageUrl ? (
-          <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[var(--border)]">
-            <Play size={32} className="text-[var(--muted)]" />
+    <div className="fixed bottom-6 right-6 z-50 w-72">
+      <Card variant="glass" padding="none" radius="xl" className="overflow-hidden shadow-2xl">
+        {/* Video/Cover area */}
+        <div
+          className="relative aspect-video bg-black cursor-pointer group"
+          onClick={handleClick}
+        >
+          {showVideo ? (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              playsInline
+              muted
+            />
+          ) : imageUrl ? (
+            <img src={imageUrl} alt={episode.title || "Episode cover"} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[var(--border)]">
+              <Play size={32} className="text-[var(--muted)]" />
+            </div>
+          )}
+
+          {/* Overlay controls */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Maximize2 size={24} className="text-white" />
           </div>
-        )}
 
-        {/* Overlay controls */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Maximize2 size={24} className="text-white" />
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            aria-label="Close mini player"
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+          >
+            <X size={14} className="text-white" />
+          </button>
+
+          {/* Progress bar */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+            <div
+              className="h-full bg-accent transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
-        >
-          <X size={14} className="text-white" />
-        </button>
-
-        {/* Progress bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-          <div
-            className="h-full bg-accent transition-all"
-            style={{ width: `${progress}%` }}
+        {/* Info bar */}
+        <HStack gap="sm" className="p-3">
+          <IconButton
+            icon={isPlaying ? <Pause size={16} /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
+            variant="solid"
+            size="sm"
+            label={isPlaying ? "Pause" : "Play"}
+            onPress={togglePlayPause}
           />
-        </div>
-      </div>
 
-      {/* Info bar */}
-      <div className="flex items-center gap-3 p-3">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            togglePlayPause();
-          }}
-          className="w-9 h-9 rounded-full bg-accent text-white flex items-center justify-center flex-shrink-0 hover:shadow-lg hover:shadow-accent/25 transition-all"
-        >
-          {isPlaying ? <Pause size={16} /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
-        </button>
-
-        <div className="flex-1 min-w-0" onClick={handleClick}>
-          <p className="text-sm font-medium truncate cursor-pointer hover:text-accent transition-colors">
-            {episode.title}
-          </p>
-          <p className="text-xs text-[var(--muted)] truncate">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </p>
-        </div>
-      </div>
+          <div
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={handleClick}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+            role="button"
+            tabIndex={0}
+          >
+            <Text variant="caption" weight="medium" numberOfLines={1} className="hover:text-accent transition-colors">
+              {episode.title}
+            </Text>
+            <Text variant="caption" muted>
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </Text>
+          </div>
+        </HStack>
+      </Card>
     </div>
   );
 }

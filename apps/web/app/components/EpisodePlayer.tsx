@@ -12,14 +12,12 @@ import {
   FileText,
   Info,
   Clock,
-  X,
   Copy,
   Twitter,
   MessageCircle,
   Mail,
   ThumbsUp,
   Send,
-  User,
   ExternalLink,
   SkipBack,
   SkipForward,
@@ -41,9 +39,20 @@ import type {
   EpisodeComment,
   PodcastFunding,
   PodcastPerson,
-  MediaSource,
   HLSQualityLevel,
 } from "@bouncepad/shared";
+import {
+  Card,
+  Button,
+  IconButton,
+  Text,
+  Avatar,
+  VStack,
+  HStack,
+  Modal,
+  Tabs,
+  Switch,
+} from "~/components/ui";
 
 // Utility functions
 function formatTime(seconds: number): string {
@@ -120,51 +129,52 @@ function ChapterList({
   const currentChapter = getCurrentChapter(chapters, currentTime);
 
   return (
-    <div className="space-y-2">
+    <VStack gap="sm">
       {chapters.map((chapter, index) => {
         const isActive = currentChapter?.id === chapter.id;
         const nextChapter = chapters[index + 1];
         const endTime = nextChapter ? nextChapter.startTime : undefined;
 
         return (
-          <button
+          <Card
             key={chapter.id}
-            onClick={() => onSeek(chapter.startTime)}
-            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left ${
-              isActive
-                ? "bg-accent/10 ring-1 ring-accent/30"
-                : "hover:bg-[var(--border)]/50"
-            }`}
+            variant="glass"
+            glassIntensity="subtle"
+            padding="sm"
+            radius="xl"
+            pressable
+            onPress={() => onSeek(chapter.startTime)}
+            className={isActive ? "ring-1 ring-accent/30" : ""}
           >
-            {chapter.imageUrl ? (
-              <img
-                src={chapter.imageUrl}
-                alt=""
-                className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
-              />
-            ) : (
-              <div className="w-14 h-14 rounded-xl bg-[var(--border)] flex items-center justify-center flex-shrink-0">
-                <List size={20} className="text-[var(--muted)]" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className={`font-medium line-clamp-1 ${isActive ? "text-accent" : ""}`}>
-                {chapter.title}
-              </p>
-              <p className="text-sm text-[var(--muted)] tabular-nums">
-                {formatTime(chapter.startTime)}
-                {endTime && ` - ${formatTime(endTime)}`}
-              </p>
-            </div>
-            {isActive && (
-              <div className="flex items-center gap-2 text-accent">
-                <Play size={16} className="fill-current" />
-              </div>
-            )}
-          </button>
+            <HStack gap="md">
+              {chapter.imageUrl ? (
+                <img
+                  src={chapter.imageUrl}
+                  alt=""
+                  className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-xl bg-[var(--border)] flex items-center justify-center flex-shrink-0">
+                  <List size={20} className="text-[var(--muted)]" />
+                </div>
+              )}
+              <VStack gap="none" align="start" className="flex-1 min-w-0">
+                <Text variant="body" weight="medium" numberOfLines={1} accent={isActive}>
+                  {chapter.title}
+                </Text>
+                <Text variant="caption" muted className="tabular-nums">
+                  {formatTime(chapter.startTime)}
+                  {endTime && ` - ${formatTime(endTime)}`}
+                </Text>
+              </VStack>
+              {isActive && (
+                <Play size={16} className="text-accent fill-current" />
+              )}
+            </HStack>
+          </Card>
         );
       })}
-    </div>
+    </VStack>
   );
 }
 
@@ -209,14 +219,14 @@ function TranscriptView({
                 : "hover:bg-[var(--border)]/30"
             }`}
           >
-            <span className="text-xs text-[var(--muted)] tabular-nums w-12 flex-shrink-0 pt-0.5">
+            <Text variant="caption" muted className="tabular-nums w-12 flex-shrink-0 pt-0.5">
               {formatTime(segment.startTime)}
-            </span>
+            </Text>
             <div className="flex-1">
               {segment.speaker && (
-                <span className="text-xs font-medium text-accent mr-2">
+                <Text variant="caption" weight="medium" accent className="mr-2 inline">
                   {segment.speaker}:
-                </span>
+                </Text>
               )}
               <span className={isActive ? "text-accent font-medium" : ""}>
                 {segment.text}
@@ -243,22 +253,18 @@ function Comment({
 }) {
   return (
     <div className={`flex gap-3 ${isReply ? "ml-12 mt-3" : ""}`}>
-      <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--border)] flex-shrink-0">
-        {comment.userImageUrl ? (
-          <img src={comment.userImageUrl} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <User size={16} className="text-[var(--muted)]" />
-          </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-sm">{comment.userName}</span>
-          <span className="text-xs text-[var(--muted)]">{formatRelativeTime(comment.timestamp)}</span>
-        </div>
-        <p className="text-sm mb-2">{comment.text}</p>
-        <div className="flex items-center gap-4">
+      <Avatar
+        src={comment.userImageUrl}
+        fallback={comment.userName}
+        size="md"
+      />
+      <VStack gap="xs" align="start" className="flex-1 min-w-0">
+        <HStack gap="sm">
+          <Text variant="caption" weight="medium">{comment.userName}</Text>
+          <Text variant="caption" muted>{formatRelativeTime(comment.timestamp)}</Text>
+        </HStack>
+        <Text variant="body">{comment.text}</Text>
+        <HStack gap="md">
           {comment.episodeTimestamp !== undefined && onSeek && (
             <button
               onClick={() => onSeek(comment.episodeTimestamp!)}
@@ -277,11 +283,11 @@ function Comment({
             <ThumbsUp size={12} className={comment.isLiked ? "fill-current" : ""} />
             {comment.likeCount || 0}
           </button>
-        </div>
+        </HStack>
         {comment.replies && comment.replies.map((reply) => (
           <Comment key={reply.id} comment={reply} onLike={onLike} onSeek={onSeek} isReply />
         ))}
-      </div>
+      </VStack>
     </div>
   );
 }
@@ -289,47 +295,38 @@ function Comment({
 // People Section Component
 function PeopleSection({ people }: { people: PodcastPerson[] }) {
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-[var(--muted)] uppercase tracking-wide">
-        Episode Credits
-      </h3>
+    <VStack gap="md">
+      <Text variant="label" muted>Episode Credits</Text>
       <div className="grid gap-4 sm:grid-cols-2">
         {people.map((person) => (
-          <div
-            key={person.id}
-            className="flex items-center gap-4 p-4 rounded-xl bg-[var(--border)]/30 hover:bg-[var(--border)]/50 transition-colors"
-          >
-            <div className="w-14 h-14 rounded-full bg-[var(--border)] flex items-center justify-center overflow-hidden flex-shrink-0">
-              {person.imageUrl ? (
-                <img
-                  src={person.imageUrl}
-                  alt={person.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <User size={24} className="text-[var(--muted)]" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold truncate">{person.name}</p>
-              {person.role && (
-                <p className="text-sm text-[var(--muted)] truncate">{person.role}</p>
-              )}
-              {person.href && (
-                <a
-                  href={person.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-accent hover:underline mt-1"
-                >
-                  Profile <ExternalLink size={10} />
-                </a>
-              )}
-            </div>
-          </div>
+          <Card key={person.id} variant="glass" glassIntensity="subtle" padding="sm" radius="xl">
+            <HStack gap="md">
+              <Avatar
+                src={person.imageUrl}
+                fallback={person.name}
+                size="lg"
+              />
+              <VStack gap="none" align="start" className="min-w-0 flex-1">
+                <Text variant="body" weight="semibold" numberOfLines={1}>{person.name}</Text>
+                {person.role && (
+                  <Text variant="caption" muted numberOfLines={1}>{person.role}</Text>
+                )}
+                {person.href && (
+                  <a
+                    href={person.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-accent hover:underline mt-1"
+                  >
+                    Profile <ExternalLink size={10} />
+                  </a>
+                )}
+              </VStack>
+            </HStack>
+          </Card>
         ))}
       </div>
-    </div>
+    </VStack>
   );
 }
 
@@ -362,10 +359,10 @@ function CommentsSection({
   };
 
   return (
-    <div className="space-y-6">
+    <VStack gap="lg">
       {/* Comment Input */}
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="relative">
+      <form onSubmit={handleSubmit}>
+        <VStack gap="sm">
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -373,36 +370,34 @@ function CommentsSection({
             className="w-full px-4 py-3 rounded-xl bg-[var(--border)]/50 border border-[var(--border)] focus:border-accent focus:ring-1 focus:ring-accent outline-none resize-none text-sm"
             rows={2}
           />
-        </div>
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={includeTimestamp}
-              onChange={(e) => setIncludeTimestamp(e.target.checked)}
-              className="rounded border-[var(--border)]"
+          <HStack justify="between">
+            <Switch
+              value={includeTimestamp}
+              onValueChange={setIncludeTimestamp}
+              size="sm"
+              label={`Include timestamp (${formatTime(Math.floor(currentTime))})`}
             />
-            Include timestamp ({formatTime(Math.floor(currentTime))})
-          </label>
-          <button
-            type="submit"
-            disabled={!newComment.trim()}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-white font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-accent/25 transition-all"
-          >
-            <Send size={14} />
-            Post
-          </button>
-        </div>
+            <Button
+              variant="solid"
+              size="sm"
+              leftIcon={<Send size={14} />}
+              disabled={!newComment.trim()}
+              onPress={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
+            >
+              Post
+            </Button>
+          </HStack>
+        </VStack>
       </form>
 
       {/* Comments List */}
-      <div className="space-y-6">
-        <p className="text-sm text-[var(--muted)]">{commentCount} comments</p>
+      <VStack gap="md">
+        <Text variant="caption" muted>{commentCount} comments</Text>
         {comments.map((comment) => (
           <Comment key={comment.id} comment={comment} onLike={onLike} onSeek={onSeek} />
         ))}
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 }
 
@@ -422,8 +417,6 @@ function ShareModal({
 }) {
   const [includeTimestamp, setIncludeTimestamp] = useState(false);
 
-  if (!isOpen) return null;
-
   const shareOptions = [
     { id: "copy", label: "Copy link", icon: <Copy size={20} /> },
     { id: "twitter", label: "Share on X", icon: <Twitter size={20} /> },
@@ -432,64 +425,52 @@ function ShareModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200"
-        onClick={onClose}
-      />
-      <div className="relative bg-[var(--background)] border border-[var(--border)] rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 motion-safe:motion-scale-in-95 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-              <Share2 size={20} className="text-accent" />
-            </div>
-            <h2 className="text-xl font-semibold">Share Episode</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-[var(--border)] transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <p className="text-sm text-[var(--muted)] mb-4">
-          Share <span className="font-medium text-[var(--foreground)]">{episodeTitle}</span>
-        </p>
+    <Modal visible={isOpen} onClose={onClose} title="Share Episode" size="sm">
+      <VStack gap="md">
+        <Text variant="caption" muted>
+          Share <Text variant="caption" weight="medium" className="inline">{episodeTitle}</Text>
+        </Text>
 
         {/* Timestamp Toggle */}
-        <label className="flex items-center gap-3 p-3 rounded-xl bg-[var(--border)]/30 mb-4 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={includeTimestamp}
-            onChange={(e) => setIncludeTimestamp(e.target.checked)}
-            className="rounded border-[var(--border)]"
-          />
-          <div className="flex-1">
-            <p className="text-sm font-medium">Start at {formatTime(Math.floor(currentTime))}</p>
-            <p className="text-xs text-[var(--muted)]">Link will start playback at current time</p>
-          </div>
-        </label>
+        <Card variant="glass" glassIntensity="subtle" padding="sm" radius="xl">
+          <HStack justify="between">
+            <VStack gap="none" align="start">
+              <Text variant="caption" weight="medium">Start at {formatTime(Math.floor(currentTime))}</Text>
+              <Text variant="caption" muted>Link will start playback at current time</Text>
+            </VStack>
+            <Switch
+              value={includeTimestamp}
+              onValueChange={setIncludeTimestamp}
+              size="sm"
+            />
+          </HStack>
+        </Card>
 
-        <div className="space-y-2">
+        <VStack gap="sm">
           {shareOptions.map((opt) => (
-            <button
+            <Card
               key={opt.id}
-              onClick={() => {
+              variant="glass"
+              glassIntensity="subtle"
+              padding="sm"
+              radius="xl"
+              pressable
+              onPress={() => {
                 onShare(opt.id, includeTimestamp ? Math.floor(currentTime) : undefined);
                 onClose();
               }}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-[var(--border)]/50 transition-colors text-left"
             >
-              <div className="w-10 h-10 rounded-full bg-[var(--border)] flex items-center justify-center">
-                {opt.icon}
-              </div>
-              <span className="font-medium">{opt.label}</span>
-            </button>
+              <HStack gap="md">
+                <div className="w-10 h-10 rounded-full bg-[var(--border)] flex items-center justify-center">
+                  {opt.icon}
+                </div>
+                <Text variant="body" weight="medium">{opt.label}</Text>
+              </HStack>
+            </Card>
           ))}
-        </div>
-      </div>
-    </div>
+        </VStack>
+      </VStack>
+    </Modal>
   );
 }
 
@@ -504,63 +485,20 @@ function FundingLinks({
   if (funding.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <HStack gap="sm" wrap>
       {funding.map((fund, i) => (
-        <button
+        <Button
           key={i}
-          onClick={() => onFundingClick?.(fund.url)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--border)] hover:bg-[var(--border)]/70 transition-colors text-sm"
+          variant="glass"
+          size="sm"
+          leftIcon={<Heart size={14} />}
+          rightIcon={<ExternalLink size={12} />}
+          onPress={() => onFundingClick?.(fund.url)}
         >
-          <Heart size={14} />
           {fund.platform || "Support"}
-          <ExternalLink size={12} className="text-[var(--muted)]" />
-        </button>
+        </Button>
       ))}
-    </div>
-  );
-}
-
-// Content Tabs
-function ContentTabs({
-  activeTab,
-  onTabChange,
-  hasChapters,
-  hasTranscript,
-  hasPeople,
-  commentCount,
-}: {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-  hasChapters: boolean;
-  hasTranscript: boolean;
-  hasPeople: boolean;
-  commentCount: number;
-}) {
-  const tabs: { id: TabType; label: string; icon: React.ReactNode; show: boolean }[] = [
-    { id: "chapters", label: "Chapters", icon: <List size={16} />, show: hasChapters },
-    { id: "transcript", label: "Transcript", icon: <FileText size={16} />, show: hasTranscript },
-    { id: "people", label: "People", icon: <Users size={16} />, show: hasPeople },
-    { id: "description", label: "About", icon: <Info size={16} />, show: true },
-    { id: "comments", label: `Comments (${commentCount})`, icon: <MessageSquare size={16} />, show: true },
-  ];
-
-  return (
-    <div className="flex gap-2 border-b border-[var(--border)] overflow-x-auto pb-px">
-      {tabs.filter(t => t.show).map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === tab.id
-              ? "border-accent text-accent"
-              : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
-          }`}
-        >
-          {tab.icon}
-          {tab.label}
-        </button>
-      ))}
-    </div>
+    </HStack>
   );
 }
 
@@ -582,7 +520,7 @@ function MediaModeToggle({
         onClick={() => onModeChange("audio")}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
           mode === "audio"
-            ? "bg-accent text-white"
+            ? "bg-accent text-[var(--accent-text)]"
             : "text-[var(--muted)] hover:text-[var(--foreground)]"
         }`}
       >
@@ -593,7 +531,7 @@ function MediaModeToggle({
         onClick={() => onModeChange("video")}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
           mode === "video"
-            ? "bg-accent text-white"
+            ? "bg-accent text-[var(--accent-text)]"
             : "text-[var(--muted)] hover:text-[var(--foreground)]"
         }`}
       >
@@ -763,13 +701,12 @@ function MediaPlayerUI({
   // Fullscreen mode uses white/light colors for contrast against black background
   const textColor = isFullscreen ? "text-white" : "";
   const mutedColor = isFullscreen ? "text-white/60" : "text-[var(--muted)]";
-  const bgColor = isFullscreen ? "bg-white/20 hover:bg-white/30" : "bg-[var(--border)] hover:bg-[var(--border)]/70";
   const trackBgColor = isFullscreen ? "bg-white/30" : "bg-[var(--border)]";
 
   return (
-    <div className={`space-y-4 ${textColor}`}>
+    <VStack gap="md" className={textColor}>
       {/* Progress Bar */}
-      <div className="space-y-2">
+      <VStack gap="sm">
         <div
           ref={sliderRef}
           className={`relative h-2 ${trackBgColor} rounded-full cursor-pointer group`}
@@ -784,14 +721,14 @@ function MediaPlayerUI({
             style={{ left: `calc(${progress}% - 8px)` }}
           />
         </div>
-        <div className={`flex justify-between text-xs ${mutedColor} tabular-nums`}>
-          <span>{formatTime(displayTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
+        <HStack justify="between">
+          <Text variant="caption" className={`${mutedColor} tabular-nums`}>{formatTime(displayTime)}</Text>
+          <Text variant="caption" className={`${mutedColor} tabular-nums`}>{formatTime(duration)}</Text>
+        </HStack>
+      </VStack>
 
       {/* Controls */}
-      <div className="flex items-center justify-between gap-4">
+      <HStack justify="between" gap="md">
         {/* Left side: Mode toggle */}
         <div className="flex-1 flex justify-start">
           {!isFullscreen && (
@@ -800,36 +737,37 @@ function MediaPlayerUI({
         </div>
 
         {/* Center: Playback controls */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onSkip(-15)}
-            className={`p-2 rounded-full ${isFullscreen ? "hover:bg-white/20" : "hover:bg-[var(--border)]"} transition-colors`}
-            title="Back 15 seconds"
-          >
-            <SkipBack size={22} />
-          </button>
+        <HStack gap="sm">
+          <IconButton
+            icon={<SkipBack size={22} />}
+            variant="ghost"
+            size="md"
+            label="Back 15 seconds"
+            onPress={() => onSkip(-15)}
+          />
 
-          <button
-            onClick={onPlayPause}
-            className="w-14 h-14 rounded-full bg-accent text-white flex items-center justify-center hover:shadow-lg hover:shadow-accent/25 transition-all"
-          >
-            {isPlaying ? <Pause size={24} /> : <Play size={24} fill="currentColor" />}
-          </button>
+          <IconButton
+            icon={isPlaying ? <Pause size={24} /> : <Play size={24} fill="currentColor" />}
+            variant="solid"
+            size="xl"
+            label={isPlaying ? "Pause" : "Play"}
+            onPress={onPlayPause}
+          />
 
-          <button
-            onClick={() => onSkip(15)}
-            className={`p-2 rounded-full ${isFullscreen ? "hover:bg-white/20" : "hover:bg-[var(--border)]"} transition-colors`}
-            title="Forward 15 seconds"
-          >
-            <SkipForward size={22} />
-          </button>
-        </div>
+          <IconButton
+            icon={<SkipForward size={22} />}
+            variant="ghost"
+            size="md"
+            label="Forward 15 seconds"
+            onPress={() => onSkip(15)}
+          />
+        </HStack>
 
         {/* Right side: Rate, Quality, Volume, Fullscreen */}
-        <div className="flex-1 flex items-center justify-end gap-2">
+        <HStack gap="sm" className="flex-1 justify-end">
           <button
             onClick={onRateChange}
-            className={`px-2.5 py-1 rounded-full ${bgColor} text-sm font-medium tabular-nums transition-colors`}
+            className={`px-2.5 py-1 rounded-full ${isFullscreen ? "bg-white/20 hover:bg-white/30" : "bg-[var(--border)] hover:bg-[var(--border)]/70"} text-sm font-medium tabular-nums transition-colors`}
           >
             {playbackRate}x
           </button>
@@ -845,24 +783,26 @@ function MediaPlayerUI({
             />
           )}
 
-          <button
-            onClick={onMuteToggle}
-            className={`p-2 rounded-full ${isFullscreen ? "hover:bg-white/20" : "hover:bg-[var(--border)]"} transition-colors`}
-          >
-            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-          </button>
+          <IconButton
+            icon={isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            variant="ghost"
+            size="sm"
+            label={isMuted ? "Unmute" : "Mute"}
+            onPress={onMuteToggle}
+          />
 
           {mediaMode === "video" && (
-            <button
-              onClick={onFullscreenToggle}
-              className={`p-2 rounded-full ${isFullscreen ? "hover:bg-white/20" : "hover:bg-[var(--border)]"} transition-colors`}
-            >
-              {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-            </button>
+            <IconButton
+              icon={isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              variant="ghost"
+              size="sm"
+              label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+              onPress={onFullscreenToggle}
+            />
           )}
-        </div>
-      </div>
-    </div>
+        </HStack>
+      </HStack>
+    </VStack>
   );
 }
 
@@ -935,7 +875,6 @@ export function EpisodePlayer({
   }, [mediaMode]);
 
   // When unmounting while in video mode, start audio for the mini player
-  // Audio position is already synced via timeupdate handler above
   const mediaModeRef = useRef(mediaMode);
   const isVideoPlayingRef = useRef(isVideoPlaying);
   useEffect(() => {
@@ -947,9 +886,7 @@ export function EpisodePlayer({
     return () => {
       // If we were in video mode, pause the video and start audio if it was playing
       if (mediaModeRef.current === "video") {
-        // Pause video immediately to prevent audio overlap
         videoRef.current?.pause();
-        // Start audio if video was playing
         if (isVideoPlayingRef.current) {
           player.play();
         }
@@ -972,18 +909,15 @@ export function EpisodePlayer({
     const video = videoRef.current;
     const isHLS = isHLSSource(currentVideoSource.mimeType);
 
-    // Function to perform initial sync when returning to video mode
     const performInitialSync = () => {
       if (videoInitialSyncDoneRef.current) return;
       videoInitialSyncDoneRef.current = true;
 
-      // If we have a position from the audio context, sync to it
       if (audioTimeRef.current > 0) {
         video.currentTime = audioTimeRef.current;
         setVideoCurrentTime(audioTimeRef.current);
       }
 
-      // If audio was playing, start video too
       if (audioPlayingRef.current) {
         video.play().catch(() => {});
       }
@@ -1008,7 +942,6 @@ export function EpisodePlayer({
         }));
         setQualityLevels(levels.sort((a, b) => b.height - a.height));
 
-        // After manifest is parsed, wait for video to be ready then sync
         requestAnimationFrame(() => {
           if (video.readyState >= 2) {
             performInitialSync();
@@ -1029,13 +962,12 @@ export function EpisodePlayer({
         hlsRef.current = null;
       };
     } else if (video.canPlayType(currentVideoSource.mimeType)) {
-      // Native HLS support (Safari) or direct video
       video.src = currentVideoSource.url;
       video.addEventListener("canplay", performInitialSync, { once: true });
     }
   }, [mediaMode, currentVideoSource]);
 
-  // Video event handlers - also sync audio position with video so it's ready for mini player
+  // Video event handlers
   useEffect(() => {
     if (mediaMode !== "video" || !videoRef.current) return;
 
@@ -1044,8 +976,6 @@ export function EpisodePlayer({
     const handleTimeUpdate = () => {
       const time = video.currentTime;
       setVideoCurrentTime(time);
-      // Keep audio position synced with video (for mini player transition)
-      // Use player.seek() to also update context state
       const audio = player.audioRef.current;
       if (audio && Math.abs(audio.currentTime - time) > 2) {
         player.seek(time);
@@ -1067,8 +997,6 @@ export function EpisodePlayer({
       video.removeEventListener("pause", handlePause);
     };
   }, [mediaMode, episode.duration, player.audioRef, player.seek]);
-
-  // Media Session is handled by the PlayerContext for audio mode
 
   // Fullscreen handling
   useEffect(() => {
@@ -1139,17 +1067,14 @@ export function EpisodePlayer({
     const wasPlaying = isPlaying;
     const savedTime = currentTime;
 
-    // Pause current playback
     if (mediaMode === "video") {
       videoRef.current?.pause();
     } else {
       player.pause();
     }
 
-    // Update mode in context
     setMediaModeLocal(mode);
 
-    // Sync time and resume if needed
     if (mode === "video") {
       setVideoCurrentTime(savedTime);
       setTimeout(() => {
@@ -1193,10 +1118,17 @@ export function EpisodePlayer({
     onShare?.(episode.id, method, timestamp);
   };
 
+  // Build tabs
+  const tabItems = [
+    ...(episode.chapters?.length ? [{ key: "chapters" as const, label: "Chapters", icon: <List size={16} /> }] : []),
+    ...(episode.transcript?.length ? [{ key: "transcript" as const, label: "Transcript", icon: <FileText size={16} /> }] : []),
+    ...(episode.people?.length ? [{ key: "people" as const, label: "People", icon: <Users size={16} /> }] : []),
+    { key: "description" as const, label: "About", icon: <Info size={16} /> },
+    { key: "comments" as const, label: `Comments (${episode.commentCount || 0})`, icon: <MessageSquare size={16} /> },
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* Audio is managed by PlayerContext */}
-
       {/* Gradient backdrop */}
       <div
         className="absolute inset-x-0 top-0 h-80 pointer-events-none motion-safe:motion-opacity-in-0 motion-safe:motion-duration-1000"
@@ -1207,7 +1139,7 @@ export function EpisodePlayer({
 
       <div className="relative max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <HStack justify="between" className="mb-8">
           {onBack && (
             <button
               onClick={onBack}
@@ -1217,14 +1149,15 @@ export function EpisodePlayer({
               {episode.podcastTitle}
             </button>
           )}
-          <button
-            onClick={() => setShowShare(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--border)] hover:bg-[var(--border)]/70 transition-colors"
+          <Button
+            variant="glass"
+            size="sm"
+            leftIcon={<Share2 size={16} />}
+            onPress={() => setShowShare(true)}
           >
-            <Share2 size={16} />
-            <span className="text-sm font-medium">Share</span>
-          </button>
-        </div>
+            Share
+          </Button>
+        </HStack>
 
         {/* Video Player (when in video mode) */}
         {mediaMode === "video" && hasVideo && (
@@ -1272,7 +1205,7 @@ export function EpisodePlayer({
 
         {/* Episode Info (when in audio mode or not fullscreen) */}
         {(mediaMode === "audio" || !isFullscreen) && (
-          <div className="flex items-center gap-6 mb-8">
+          <HStack gap="lg" className="mb-8">
             <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 transition-all duration-500">
               {displayImage ? (
                 <img src={displayImage} alt="" className="w-full h-full object-cover" />
@@ -1280,23 +1213,23 @@ export function EpisodePlayer({
                 <div className="w-full h-full bg-gradient-to-br from-accent to-accent/50" />
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold line-clamp-2 mb-1">{episode.title}</h1>
-              <p className="text-sm text-[var(--muted)]">
+            <VStack gap="xs" align="start" className="flex-1 min-w-0">
+              <Text variant="h4" numberOfLines={2}>{episode.title}</Text>
+              <Text variant="caption" muted>
                 {episode.podcastTitle} · {formatDate(episode.pubDate)}
-              </p>
+              </Text>
               {currentChapter && (
-                <p className="text-sm text-accent mt-1 line-clamp-1">
+                <Text variant="caption" accent numberOfLines={1}>
                   {currentChapter.title}
-                </p>
+                </Text>
               )}
-            </div>
-          </div>
+            </VStack>
+          </HStack>
         )}
 
         {/* Player Controls (when not in fullscreen video) */}
         {!isFullscreen && (
-          <div className="mb-8 p-6 rounded-2xl bg-[var(--border)]/20">
+          <Card variant="glass" padding="lg" radius="xl" className="mb-8">
             <MediaPlayerUI
               isPlaying={isPlaying}
               currentTime={currentTime}
@@ -1319,7 +1252,7 @@ export function EpisodePlayer({
               onAutoQuality={handleAutoQuality}
               onFullscreenToggle={handleFullscreenToggle}
             />
-          </div>
+          </Card>
         )}
 
         {/* Funding Links */}
@@ -1332,13 +1265,12 @@ export function EpisodePlayer({
         {/* Content Tabs */}
         {!isFullscreen && (
           <>
-            <ContentTabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              hasChapters={!!episode.chapters?.length}
-              hasTranscript={!!episode.transcript?.length}
-              hasPeople={!!episode.people?.length}
-              commentCount={episode.commentCount || 0}
+            <Tabs
+              items={tabItems}
+              activeKey={activeTab}
+              onChange={(key) => setActiveTab(key as TabType)}
+              variant="underline"
+              size="md"
             />
 
             {/* Tab Content */}
@@ -1360,9 +1292,9 @@ export function EpisodePlayer({
               )}
 
               {activeTab === "description" && (
-                <p className="text-[var(--muted)] leading-relaxed whitespace-pre-wrap">
+                <Text variant="body" muted className="leading-relaxed whitespace-pre-wrap">
                   {episode.description || "No description available."}
-                </p>
+                </Text>
               )}
 
               {activeTab === "people" && episode.people && (

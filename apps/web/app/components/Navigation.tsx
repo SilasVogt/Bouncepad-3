@@ -27,11 +27,14 @@ const navItems: NavItem[] = [
 function DesktopUserButton() {
   const { user } = useUser();
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
-  const isActive = currentPath === "/settings";
   const convexUser = useQuery(
     api.users.getByClerkId,
     user?.id ? { clerkId: user.id } : "skip"
   );
+
+  const username = convexUser?.username || "profile";
+  const profilePath = `/user/${username}`;
+  const isActive = currentPath === profilePath;
 
   const label = convexUser?.username
     ? `@${convexUser.username}`
@@ -41,7 +44,8 @@ function DesktopUserButton() {
     <ClerkLoaded>
       <SignedIn>
         <Link
-          to="/settings"
+          to="/user/$username"
+          params={{ username }}
           className={`
             flex items-center gap-2 px-4 h-10 rounded-lg font-medium text-sm
             [transform:none!important]
@@ -82,13 +86,21 @@ function DesktopUserButton() {
 function MobileUserButton() {
   const { user } = useUser();
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
-  const isActive = currentPath === "/settings";
+  const convexUser = useQuery(
+    api.users.getByClerkId,
+    user?.id ? { clerkId: user.id } : "skip"
+  );
+
+  const username = convexUser?.username || "profile";
+  const profilePath = `/user/${username}`;
+  const isActive = currentPath === profilePath;
 
   return (
     <ClerkLoaded>
       <SignedIn>
         <Link
-          to="/settings"
+          to="/user/$username"
+          params={{ username }}
           className={`
             flex flex-col items-center gap-1 px-4 py-3 rounded-lg
             transition-colors duration-150
