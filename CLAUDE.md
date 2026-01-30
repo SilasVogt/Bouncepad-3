@@ -38,6 +38,23 @@ When the user tells Claude what feature they're working on, Claude should:
 - Remember the feature context throughout the session
 - Prompt to commit/push before ending session or switching contexts
 
+### Code Review with CodeRabbit
+
+**CodeRabbit CLI is installed** on this machine. When a feature or change appears complete and ready for review:
+
+1. **Trigger a code review** using one of these methods:
+   - Use the `/coderabbit:review` skill if the CodeRabbit plugin is installed
+   - Or run: `coderabbit review --plain`
+
+2. **When to trigger reviews**:
+   - After completing a feature branch before creating a PR
+   - When significant changes have been made and you want feedback
+   - When the user asks for a code review
+
+3. **After receiving review feedback**:
+   - Address any issues flagged by CodeRabbit
+   - Commit fixes before creating the PR
+
 ---
 
 ## UI Component System
