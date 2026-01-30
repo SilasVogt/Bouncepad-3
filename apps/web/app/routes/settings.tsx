@@ -19,6 +19,7 @@ import {
   VStack,
   HStack,
   Divider,
+  Switch,
 } from "~/components/ui";
 import { AccentColorPicker } from "~/components/AccentColorPicker";
 import { useTheme } from "~/lib/theme";
@@ -62,6 +63,13 @@ function SettingsContent() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+
+  // Privacy settings (mock state for now)
+  const [isPublicProfile, setIsPublicProfile] = useState(true);
+  const [showFollowingPodcasts, setShowFollowingPodcasts] = useState(true);
+  const [showFollowingPeople, setShowFollowingPeople] = useState(true);
+  const [showFollowers, setShowFollowers] = useState(true);
+  const [showFollowing, setShowFollowing] = useState(true);
 
   // Initialize username from convex user
   useEffect(() => {
@@ -175,6 +183,80 @@ function SettingsContent() {
                 )}
               </HStack>
             </VStack>
+          </VStack>
+        </Card>
+
+        {/* Privacy Section */}
+        <Card variant="glass" padding="lg" radius="xl">
+          <VStack gap="md">
+            <Text variant="h3">Privacy</Text>
+
+            <HStack justify="between" align="center">
+              <VStack gap="none" align="start">
+                <Text variant="body" weight="medium">Public Profile</Text>
+                <Text variant="caption" muted>Allow others to view your profile</Text>
+              </VStack>
+              <Switch
+                value={isPublicProfile}
+                onValueChange={setIsPublicProfile}
+              />
+            </HStack>
+
+            <Divider />
+
+            <Text variant="label" muted>What to share on your profile</Text>
+
+            <HStack justify="between" align="center">
+              <VStack gap="none" align="start">
+                <Text variant="body" weight="medium">Show Podcasts</Text>
+                <Text variant="caption" muted>Display podcasts you follow</Text>
+              </VStack>
+              <Switch
+                value={showFollowingPodcasts}
+                onValueChange={setShowFollowingPodcasts}
+                disabled={!isPublicProfile}
+              />
+            </HStack>
+
+            <HStack justify="between" align="center">
+              <VStack gap="none" align="start">
+                <Text variant="body" weight="medium">Show People</Text>
+                <Text variant="caption" muted>Display podcast people you follow</Text>
+              </VStack>
+              <Switch
+                value={showFollowingPeople}
+                onValueChange={setShowFollowingPeople}
+                disabled={!isPublicProfile}
+              />
+            </HStack>
+
+            <Divider />
+
+            <Text variant="label" muted>Social visibility</Text>
+
+            <HStack justify="between" align="center">
+              <VStack gap="none" align="start">
+                <Text variant="body" weight="medium">Show Followers</Text>
+                <Text variant="caption" muted>Display who follows you</Text>
+              </VStack>
+              <Switch
+                value={showFollowers}
+                onValueChange={setShowFollowers}
+                disabled={!isPublicProfile}
+              />
+            </HStack>
+
+            <HStack justify="between" align="center">
+              <VStack gap="none" align="start">
+                <Text variant="body" weight="medium">Show Following</Text>
+                <Text variant="caption" muted>Display who you follow</Text>
+              </VStack>
+              <Switch
+                value={showFollowing}
+                onValueChange={setShowFollowing}
+                disabled={!isPublicProfile}
+              />
+            </HStack>
           </VStack>
         </Card>
 

@@ -15,7 +15,9 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as FollowingRouteImport } from './routes/following'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UserUsernameRouteImport } from './routes/user.$username'
 import { Route as PodcastIdRouteImport } from './routes/podcast.$id'
+import { Route as PersonSlugRouteImport } from './routes/person.$slug'
 import { Route as EpisodeIdRouteImport } from './routes/episode.$id'
 import { Route as AdminHiveRouteImport } from './routes/admin.hive'
 
@@ -49,9 +51,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserUsernameRoute = UserUsernameRouteImport.update({
+  id: '/user/$username',
+  path: '/user/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PodcastIdRoute = PodcastIdRouteImport.update({
   id: '/podcast/$id',
   path: '/podcast/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonSlugRoute = PersonSlugRouteImport.update({
+  id: '/person/$slug',
+  path: '/person/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EpisodeIdRoute = EpisodeIdRouteImport.update({
@@ -74,7 +86,9 @@ export interface FileRoutesByFullPath {
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
+  '/person/$slug': typeof PersonSlugRoute
   '/podcast/$id': typeof PodcastIdRoute
+  '/user/$username': typeof UserUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,7 +99,9 @@ export interface FileRoutesByTo {
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
+  '/person/$slug': typeof PersonSlugRoute
   '/podcast/$id': typeof PodcastIdRoute
+  '/user/$username': typeof UserUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,7 +113,9 @@ export interface FileRoutesById {
   '/showcase': typeof ShowcaseRoute
   '/admin/hive': typeof AdminHiveRoute
   '/episode/$id': typeof EpisodeIdRoute
+  '/person/$slug': typeof PersonSlugRoute
   '/podcast/$id': typeof PodcastIdRoute
+  '/user/$username': typeof UserUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,7 +128,9 @@ export interface FileRouteTypes {
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
+    | '/person/$slug'
     | '/podcast/$id'
+    | '/user/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,7 +141,9 @@ export interface FileRouteTypes {
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
+    | '/person/$slug'
     | '/podcast/$id'
+    | '/user/$username'
   id:
     | '__root__'
     | '/'
@@ -132,7 +154,9 @@ export interface FileRouteTypes {
     | '/showcase'
     | '/admin/hive'
     | '/episode/$id'
+    | '/person/$slug'
     | '/podcast/$id'
+    | '/user/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,7 +168,9 @@ export interface RootRouteChildren {
   ShowcaseRoute: typeof ShowcaseRoute
   AdminHiveRoute: typeof AdminHiveRoute
   EpisodeIdRoute: typeof EpisodeIdRoute
+  PersonSlugRoute: typeof PersonSlugRoute
   PodcastIdRoute: typeof PodcastIdRoute
+  UserUsernameRoute: typeof UserUsernameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -191,11 +217,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/$username': {
+      id: '/user/$username'
+      path: '/user/$username'
+      fullPath: '/user/$username'
+      preLoaderRoute: typeof UserUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/podcast/$id': {
       id: '/podcast/$id'
       path: '/podcast/$id'
       fullPath: '/podcast/$id'
       preLoaderRoute: typeof PodcastIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/person/$slug': {
+      id: '/person/$slug'
+      path: '/person/$slug'
+      fullPath: '/person/$slug'
+      preLoaderRoute: typeof PersonSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/episode/$id': {
@@ -224,7 +264,9 @@ const rootRouteChildren: RootRouteChildren = {
   ShowcaseRoute: ShowcaseRoute,
   AdminHiveRoute: AdminHiveRoute,
   EpisodeIdRoute: EpisodeIdRoute,
+  PersonSlugRoute: PersonSlugRoute,
   PodcastIdRoute: PodcastIdRoute,
+  UserUsernameRoute: UserUsernameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

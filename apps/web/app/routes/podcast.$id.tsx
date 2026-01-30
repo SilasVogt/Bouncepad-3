@@ -84,6 +84,19 @@ function PodcastPageRoute() {
     navigate({ to: "/episode/$id", params: { id: episode.id } });
   };
 
+  const handleFollowPerson = (personId: string) => {
+    console.log("Follow person:", personId);
+  };
+
+  const handleViewPersonProfile = (personId: string) => {
+    // Convert person name to slug (e.g., "Chris Fisher" -> "chris_fisher")
+    const person = mockPodcast.people.find(p => p.id === personId);
+    if (person) {
+      const slug = person.name.toLowerCase().replace(/\s+/g, "_");
+      navigate({ to: "/person/$slug", params: { slug } });
+    }
+  };
+
   return (
     <PodcastPage
       podcast={mockPodcast}
@@ -95,6 +108,8 @@ function PodcastPageRoute() {
       onFundingClick={handleFundingClick}
       onPodrollClick={handlePodrollClick}
       onEpisodePlay={handleEpisodePlay}
+      onFollowPerson={handleFollowPerson}
+      onViewPersonProfile={handleViewPersonProfile}
     />
   );
 }

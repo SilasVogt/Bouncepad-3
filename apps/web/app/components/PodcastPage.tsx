@@ -7,17 +7,13 @@ import {
   Heart,
   Play,
   Pause,
-  User,
   ChevronDown,
   ExternalLink,
-  X,
-  Bell,
   Copy,
   Twitter,
   MessageCircle,
   Mail,
   UserMinus,
-  Link,
 } from "lucide-react";
 import type {
   PodcastPageData,
@@ -26,6 +22,17 @@ import type {
   PodcastPodrollItem,
   NotificationSettings,
 } from "@bouncepad/shared";
+import {
+  Card,
+  Button,
+  Text,
+  Avatar,
+  VStack,
+  HStack,
+  Modal,
+  Switch,
+  IconButton,
+} from "~/components/ui";
 
 interface PodcastPageProps {
   podcast: PodcastPageData;
@@ -37,6 +44,9 @@ interface PodcastPageProps {
   onFundingClick?: (url: string) => void;
   onPodrollClick?: (item: PodcastPodrollItem) => void;
   onEpisodePlay?: (episode: PodcastEpisode) => void;
+  onShowAllEpisodes?: () => void;
+  onFollowPerson?: (personId: string) => void;
+  onViewPersonProfile?: (personId: string) => void;
 }
 
 function formatDuration(seconds?: number): string {
@@ -58,73 +68,121 @@ function formatDate(timestamp?: number): string {
 }
 
 // Person Component
-function PersonChip({ person }: { person: PodcastPerson }) {
+function PersonChip({ person, onPress }: { person: PodcastPerson; onPress: () => void }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[var(--border)]/50 backdrop-blur">
-      <div className="w-12 h-12 rounded-full overflow-hidden bg-[var(--border)]">
-        {person.imageUrl ? (
-          <img src={person.imageUrl} alt={person.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <User size={20} className="text-[var(--muted)]" />
-          </div>
-        )}
-      </div>
-      <div>
-        <p className="font-medium text-sm">{person.name}</p>
-        {person.role && <p className="text-xs text-[var(--muted)]">{person.role}</p>}
-      </div>
-    </div>
+    <button
+      onClick={onPress}
+      className="glass-card px-3 py-2 rounded-2xl flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
+    >
+      <Avatar
+        src={person.imageUrl}
+        fallback={person.name}
+        size="sm"
+      />
+      <VStack gap="none" align="start">
+        <Text variant="caption" weight="medium">{person.name}</Text>
+        {person.role && <Text variant="caption" muted>{person.role}</Text>}
+      </VStack>
+    </button>
+  );
+}
+
+// Person Modal
+function PersonModal({
+  person,
+  isOpen,
+  onClose,
+  onFollow,
+  onViewProfile,
+}: {
+  person: PodcastPerson | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onFollow?: (personId: string) => void;
+  onViewProfile?: (personId: string) => void;
+}) {
+  if (!person) return null;
+
+  return (
+    <Modal visible={isOpen} onClose={onClose} size="sm">
+      <VStack gap="md" align="center" className="text-center">
+        <Avatar
+          src={person.imageUrl}
+          fallback={person.name}
+          size="xl"
+        />
+        <VStack gap="xs">
+          <Text variant="h4">{person.name}</Text>
+          {person.role && <Text variant="body" muted>{person.role}</Text>}
+        </VStack>
+
+        <HStack gap="sm" className="w-full mt-2">
+          <Button
+            variant="solid"
+            fullWidth
+            leftIcon={<Plus size={18} />}
+            onPress={() => onFollow?.(person.id)}
+          >
+            Follow
+          </Button>
+          <Button
+            variant="glass"
+            fullWidth
+            onPress={() => onViewProfile?.(person.id)}
+          >
+            View Profile
+          </Button>
+        </HStack>
+      </VStack>
+    </Modal>
   );
 }
 
 // Episode Row
 function EpisodeRow({ episode, onPlay }: { episode: PodcastEpisode; onPlay: () => void }) {
   return (
-    <button
-      onClick={onPlay}
-      className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-[var(--border)]/50 transition-all group text-left"
-    >
-      <div className="w-14 h-14 rounded-xl overflow-hidden bg-[var(--border)] flex-shrink-0 relative">
-        {episode.imageUrl ? (
-          <img src={episode.imageUrl} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[var(--border)] to-[var(--background)]" />
-        )}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors">
-          <Play size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+    <Card variant="glass" glassIntensity="subtle" padding="sm" radius="xl" pressable onPress={onPlay}>
+      <HStack gap="md">
+        <div className="w-14 h-14 rounded-xl overflow-hidden bg-[var(--border)] flex-shrink-0 relative group">
+          {episode.imageUrl ? (
+            <img src={episode.imageUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[var(--border)] to-[var(--background)]" />
+          )}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors">
+            <Play size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity ml-0.5" />
+          </div>
         </div>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium line-clamp-1 mb-0.5">{episode.title}</p>
-        <p className="text-sm text-[var(--muted)]">
-          {formatDate(episode.pubDate)}
-          {episode.duration && ` · ${formatDuration(episode.duration)}`}
-        </p>
-      </div>
-    </button>
+        <VStack gap="none" align="start" className="flex-1 min-w-0">
+          <Text variant="body" weight="medium" numberOfLines={1}>{episode.title}</Text>
+          <Text variant="caption" muted>
+            {formatDate(episode.pubDate)}
+            {episode.duration && ` · ${formatDuration(episode.duration)}`}
+          </Text>
+        </VStack>
+      </HStack>
+    </Card>
   );
 }
 
 // Podroll Card
 function PodrollCard({ item, onClick }: { item: PodcastPodrollItem; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-[var(--border)]/50 transition-all text-left"
-    >
-      <div className="w-16 h-16 rounded-xl overflow-hidden bg-[var(--border)] flex-shrink-0">
-        {item.imageUrl ? (
-          <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-accent/20 to-accent/5" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm line-clamp-2">{item.title}</p>
-      </div>
-      <Plus size={18} className="text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
-    </button>
+    <Card variant="glass" glassIntensity="subtle" padding="sm" radius="xl" pressable onPress={onClick} className="group">
+      <HStack gap="sm">
+        <div className="w-16 h-16 rounded-xl overflow-hidden bg-[var(--border)] flex-shrink-0">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-accent/20 to-accent/5" />
+          )}
+        </div>
+        <Text variant="caption" weight="medium" numberOfLines={2} className="flex-1 min-w-0">
+          {item.title}
+        </Text>
+        <Plus size={18} className="text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+      </HStack>
+    </Card>
   );
 }
 
@@ -142,8 +200,6 @@ function NotificationModal({
   onUnfollow: () => void;
   onClose: () => void;
 }) {
-  if (!isOpen) return null;
-
   const options: { key: keyof NotificationSettings; label: string; description: string }[] = [
     { key: "onScheduled", label: "New stream scheduled", description: "When a new livestream is scheduled" },
     { key: "before10Min", label: "10 minute reminder", description: "10 minutes before a scheduled stream" },
@@ -155,75 +211,45 @@ function NotificationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-[var(--background)] border border-[var(--border)] rounded-3xl shadow-2xl p-6 w-full max-w-md mx-4 motion-safe:motion-scale-in-95 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-              <Bell size={20} className="text-accent" />
-            </div>
-            <h2 className="text-xl font-semibold">Notifications</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-[var(--border)] transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Options */}
-        <div className="space-y-3">
-          {options.map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => handleToggle(opt.key)}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-[var(--border)]/50 transition-colors text-left"
-            >
-              {/* Checkbox */}
-              <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${
-                settings[opt.key]
-                  ? "bg-accent border-accent"
-                  : "border-[var(--border)]"
-              }`}>
-                {settings[opt.key] && <Check size={14} className="text-white" />}
-              </div>
-
-              {/* Label */}
-              <div className="flex-1">
-                <p className="font-medium">{opt.label}</p>
-                <p className="text-sm text-[var(--muted)]">{opt.description}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-[var(--border)] space-y-3">
-          <button
-            onClick={onClose}
-            className="w-full py-3 rounded-full bg-accent text-white font-medium hover:shadow-lg hover:shadow-accent/25 transition-all"
-          >
+    <Modal
+      visible={isOpen}
+      onClose={onClose}
+      title="Notifications"
+      size="md"
+      footer={
+        <VStack gap="sm" className="w-full">
+          <Button variant="solid" fullWidth onPress={onClose}>
             Done
-          </button>
-          <button
-            onClick={() => { onUnfollow(); onClose(); }}
-            className="w-full py-3 rounded-full bg-[var(--border)] text-[var(--foreground)] font-medium hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
+          </Button>
+          <Button
+            variant="ghost"
+            fullWidth
+            leftIcon={<UserMinus size={18} />}
+            onPress={() => { onUnfollow(); onClose(); }}
           >
-            <UserMinus size={18} />
             Unfollow
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </VStack>
+      }
+    >
+      <VStack gap="sm">
+        {options.map((opt) => (
+          <Card key={opt.key} variant="glass" glassIntensity="subtle" padding="sm" radius="xl">
+            <HStack gap="md" justify="between">
+              <VStack gap="none" align="start" className="flex-1">
+                <Text variant="body" weight="medium">{opt.label}</Text>
+                <Text variant="caption" muted>{opt.description}</Text>
+              </VStack>
+              <Switch
+                value={settings[opt.key]}
+                onValueChange={() => handleToggle(opt.key)}
+                size="sm"
+              />
+            </HStack>
+          </Card>
+        ))}
+      </VStack>
+    </Modal>
   );
 }
 
@@ -239,8 +265,6 @@ function ShareModal({
   onShare: (method: string) => void;
   onClose: () => void;
 }) {
-  if (!isOpen) return null;
-
   const shareOptions = [
     { id: "copy", label: "Copy link", icon: <Copy size={20} /> },
     { id: "twitter", label: "Share on X", icon: <Twitter size={20} /> },
@@ -249,53 +273,31 @@ function ShareModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-[var(--background)] border border-[var(--border)] rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 motion-safe:motion-scale-in-95 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-              <Share2 size={20} className="text-accent" />
-            </div>
-            <h2 className="text-xl font-semibold">Share</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-[var(--border)] transition-colors"
+    <Modal visible={isOpen} onClose={onClose} title="Share" size="sm">
+      <VStack gap="sm">
+        <Text variant="caption" muted>
+          Share <Text variant="caption" weight="medium" className="inline">{podcastTitle}</Text> with others
+        </Text>
+        {shareOptions.map((opt) => (
+          <Card
+            key={opt.id}
+            variant="glass"
+            glassIntensity="subtle"
+            padding="sm"
+            radius="xl"
+            pressable
+            onPress={() => { onShare(opt.id); onClose(); }}
           >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Share text */}
-        <p className="text-sm text-[var(--muted)] mb-4">
-          Share <span className="font-medium text-[var(--foreground)]">{podcastTitle}</span> with others
-        </p>
-
-        {/* Options */}
-        <div className="space-y-2">
-          {shareOptions.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => { onShare(opt.id); onClose(); }}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-[var(--border)]/50 transition-colors text-left"
-            >
+            <HStack gap="md">
               <div className="w-10 h-10 rounded-full bg-[var(--border)] flex items-center justify-center">
                 {opt.icon}
               </div>
-              <span className="font-medium">{opt.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+              <Text variant="body" weight="medium">{opt.label}</Text>
+            </HStack>
+          </Card>
+        ))}
+      </VStack>
+    </Modal>
   );
 }
 
@@ -309,10 +311,14 @@ export function PodcastPage({
   onFundingClick,
   onPodrollClick,
   onEpisodePlay,
+  onShowAllEpisodes,
+  onFollowPerson,
+  onViewPersonProfile,
 }: PodcastPageProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [playingTrailer, setPlayingTrailer] = useState<string | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<PodcastPerson | null>(null);
   const [localNotifications, setLocalNotifications] = useState<NotificationSettings>(
     podcast.notifications || { onScheduled: true, before10Min: true, onLive: true }
   );
@@ -343,12 +349,12 @@ export function PodcastPage({
         }}
       />
 
-      <div className="relative max-w-4xl mx-auto px-6 py-8">
+      <div className="relative max-w-5xl mx-auto px-6 py-6">
         {/* Back */}
         {onBack && (
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors mb-12"
+            className="flex items-center gap-1.5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors mb-8"
           >
             <ArrowLeft size={16} />
             Back
@@ -356,9 +362,9 @@ export function PodcastPage({
         )}
 
         {/* Hero */}
-        <header className="text-center mb-12">
+        <header className="text-center mb-8">
           {/* Cover */}
-          <div className="w-48 h-48 mx-auto rounded-3xl overflow-hidden shadow-2xl mb-8 ring-1 ring-white/10 motion-safe:motion-scale-in-75 motion-safe:motion-opacity-in-0 motion-safe:motion-blur-in-sm motion-safe:motion-duration-500">
+          <div className="w-56 h-56 lg:w-64 lg:h-64 mx-auto rounded-3xl overflow-hidden shadow-2xl mb-6 ring-1 ring-white/10 motion-safe:motion-scale-in-75 motion-safe:motion-opacity-in-0 motion-safe:motion-blur-in-sm motion-safe:motion-duration-500">
             {podcast.imageUrl ? (
               <img src={podcast.imageUrl} alt="" className="w-full h-full object-cover" />
             ) : (
@@ -367,43 +373,43 @@ export function PodcastPage({
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold tracking-tight mb-2 motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-150">{podcast.title}</h1>
-          <p className="text-lg text-[var(--muted)] mb-6 motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-200">{podcast.author}</p>
+          <Text variant="h2" className="mb-2 motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-150">
+            {podcast.title}
+          </Text>
+          <Text variant="body" muted className="mb-6 motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-200">
+            {podcast.author}
+          </Text>
 
           {/* Actions */}
-          <div className="flex items-center justify-center gap-3 flex-wrap motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-300">
+          <HStack gap="sm" justify="center" wrap className="motion-safe:motion-translate-y-in-25 motion-safe:motion-opacity-in-0 motion-safe:motion-duration-500 motion-safe:motion-delay-300">
             {/* Follow */}
-            <button
-              onClick={() => podcast.isFollowing ? setShowNotifications(true) : onFollow?.(podcast.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all ${
-                podcast.isFollowing
-                  ? "bg-[var(--border)] text-[var(--foreground)]"
-                  : "bg-accent text-white hover:shadow-lg hover:shadow-accent/25"
-              }`}
+            <Button
+              variant={podcast.isFollowing ? "glow" : "solid"}
+              leftIcon={podcast.isFollowing ? <Check size={18} /> : <Plus size={18} />}
+              rightIcon={podcast.isFollowing ? <ChevronDown size={14} /> : undefined}
+              onPress={() => podcast.isFollowing ? setShowNotifications(true) : onFollow?.(podcast.id)}
             >
-              {podcast.isFollowing ? <Check size={18} /> : <Plus size={18} />}
               {podcast.isFollowing ? "Following" : "Follow"}
-              {podcast.isFollowing && <ChevronDown size={14} className="ml-1" />}
-            </button>
+            </Button>
 
             {/* Share */}
-            <button
-              onClick={() => setShowShare(true)}
-              className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--border)] hover:bg-[var(--border)]/70 transition-colors"
+            <Button
+              variant="solid"
+              leftIcon={<Share2 size={18} />}
+              onPress={() => setShowShare(true)}
             >
-              <Share2 size={18} />
-              <span className="font-medium">Share</span>
-            </button>
+              Share
+            </Button>
 
             {/* Funding */}
             {podcast.funding && podcast.funding.length > 0 && (
-              <button
-                onClick={() => onFundingClick?.(podcast.funding![0].url)}
-                className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--border)] hover:bg-[var(--border)]/70 transition-colors"
+              <Button
+                variant="glow"
+                leftIcon={<Heart size={18} />}
+                onPress={() => onFundingClick?.(podcast.funding![0].url)}
               >
-                <Heart size={18} />
-                <span className="font-medium">Support</span>
-              </button>
+                Support
+              </Button>
             )}
 
             {/* Website */}
@@ -412,126 +418,130 @@ export function PodcastPage({
                 href={podcast.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-3 rounded-full bg-[var(--border)] hover:bg-[var(--border)]/70 transition-colors"
               >
-                <ExternalLink size={18} />
-                <span className="font-medium">Website</span>
+                <Button variant="glow" leftIcon={<ExternalLink size={18} />}>
+                  Website
+                </Button>
               </a>
             )}
-          </div>
+          </HStack>
 
           {/* Status */}
           {podcast.status === "live" && (
             <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span className="text-sm font-medium">Live Now</span>
+              <Text variant="caption" weight="medium" accent>Live Now</Text>
             </div>
           )}
         </header>
 
         {/* People */}
         {podcast.people.length > 0 && (
-          <section className="mb-12">
-            <div className="flex flex-wrap gap-3 justify-center">
+          <section className="mb-8">
+            <HStack gap="sm" wrap justify="center">
               {podcast.people.map((person) => (
-                <PersonChip key={person.id} person={person} />
+                <PersonChip key={person.id} person={person} onPress={() => setSelectedPerson(person)} />
               ))}
-            </div>
+            </HStack>
           </section>
         )}
 
         {/* Description */}
-        <section className="mb-12">
-          <p className="text-[var(--muted)] leading-relaxed text-center max-w-2xl mx-auto">
+        <section className="mb-8">
+          <Text variant="body" muted align="center" className="max-w-2xl mx-auto leading-relaxed">
             {podcast.description}
-          </p>
+          </Text>
         </section>
 
         {/* Two column layout for wider screens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column: Trailer + Episodes */}
-          <div>
+          <VStack gap="lg">
             {/* Trailers */}
             {podcast.trailers.length > 0 && (
-              <section className="mb-12">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)] mb-4">
-                  Trailer
-                </h2>
+              <section>
+                <Text variant="label" muted className="mb-4">Trailer</Text>
                 {podcast.trailers.slice(0, 1).map((trailer) => (
-                  <div
-                    key={trailer.id}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--border)]/50"
-                  >
-                    <button
-                      onClick={() => setPlayingTrailer(playingTrailer === trailer.id ? null : trailer.id)}
-                      className="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white flex-shrink-0 hover:shadow-lg hover:shadow-accent/25 transition-shadow"
-                    >
-                      {playingTrailer === trailer.id ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <div className="h-1 bg-[var(--border)] rounded-full overflow-hidden">
-                        <div className="w-0 h-full bg-accent rounded-full transition-all" />
+                  <Card key={trailer.id} variant="glass" padding="md" radius="xl">
+                    <HStack gap="md">
+                      <IconButton
+                        icon={playingTrailer === trailer.id ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
+                        variant="solid"
+                        size="lg"
+                        label={playingTrailer === trailer.id ? "Pause" : "Play"}
+                        onPress={() => setPlayingTrailer(playingTrailer === trailer.id ? null : trailer.id)}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                          <div className="w-0 h-full bg-accent rounded-full transition-all" />
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-sm text-[var(--muted)] tabular-nums">
-                      {formatDuration(trailer.duration)}
-                    </span>
-                  </div>
+                      <Text variant="caption" muted className="tabular-nums">
+                        {formatDuration(trailer.duration)}
+                      </Text>
+                    </HStack>
+                  </Card>
                 ))}
               </section>
             )}
 
             {/* Episodes */}
             {podcast.episodes.length > 0 && (
-              <section className="mb-12">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)] mb-4">
-                  Recent Episodes
-                </h2>
-                <div className="-mx-4">
+              <section>
+                <Text variant="label" muted className="mb-4">Recent Episodes</Text>
+                <VStack gap="sm">
                   {podcast.episodes.slice(0, 5).map((ep) => (
                     <EpisodeRow key={ep.id} episode={ep} onPlay={() => onEpisodePlay?.(ep)} />
                   ))}
-                </div>
+                </VStack>
+                {podcast.episodes.length > 5 && onShowAllEpisodes && (
+                  <Button
+                    variant="ghost"
+                    fullWidth
+                    onPress={onShowAllEpisodes}
+                    className="mt-4"
+                  >
+                    Show all episodes
+                  </Button>
+                )}
               </section>
             )}
-          </div>
+          </VStack>
 
           {/* Right column: Recommendations */}
-          <div>
+          <VStack gap="lg">
             {/* Bouncepad-curated similar podcasts */}
             {podcast.similarPodcasts.length > 0 && (
-              <section className="mb-12">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)] mb-4">
-                  Recommended
-                </h2>
-                <div className="-mx-4">
+              <section>
+                <Text variant="label" muted className="mb-4">Recommended</Text>
+                <VStack gap="sm">
                   {podcast.similarPodcasts.map((item) => (
                     <PodrollCard key={item.id} item={item} onClick={() => onPodrollClick?.(item)} />
                   ))}
-                </div>
+                </VStack>
               </section>
             )}
 
             {/* Podcast's own podroll recommendations */}
             {podcast.podroll.length > 0 && (
-              <section className="mb-12">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)] mb-4">
-                  Recommended by {podcast.title}
-                </h2>
-                <div className="-mx-4">
+              <section>
+                <Text variant="label" muted className="mb-4">Recommended by {podcast.title}</Text>
+                <VStack gap="sm">
                   {podcast.podroll.map((item) => (
                     <PodrollCard key={item.id} item={item} onClick={() => onPodrollClick?.(item)} />
                   ))}
-                </div>
+                </VStack>
               </section>
             )}
-          </div>
+          </VStack>
         </div>
 
         {/* Last stream info */}
         {podcast.lastLiveDate && (
-          <footer className="text-center text-sm text-[var(--muted)] pt-8 border-t border-[var(--border)]">
-            Last live · {formatDate(podcast.lastLiveDate)}
+          <footer className="text-center pt-8 border-t border-[var(--border)] mt-12">
+            <Text variant="caption" muted>
+              Last live · {formatDate(podcast.lastLiveDate)}
+            </Text>
           </footer>
         )}
       </div>
@@ -551,6 +561,21 @@ export function PodcastPage({
         podcastTitle={podcast.title}
         onShare={handleShare}
         onClose={() => setShowShare(false)}
+      />
+
+      {/* Person Modal */}
+      <PersonModal
+        person={selectedPerson}
+        isOpen={!!selectedPerson}
+        onClose={() => setSelectedPerson(null)}
+        onFollow={(personId) => {
+          onFollowPerson?.(personId);
+          setSelectedPerson(null);
+        }}
+        onViewProfile={(personId) => {
+          onViewPersonProfile?.(personId);
+          setSelectedPerson(null);
+        }}
       />
     </div>
   );
