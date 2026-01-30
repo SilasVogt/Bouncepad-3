@@ -582,6 +582,35 @@ export default defineSchema({
       filterFields: ["reason"],
     }),
 
+  // RSS feed parse job queue (scheduling infrastructure)
+  parse_jobs: defineTable({
+    feedUrl: v.string(),
+    blockNumbers: v.optional(v.array(v.number())), // Hive blocks that triggered this (only for podping)
+    priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
+    reason: v.union(
+      v.literal("auto"),
+      v.literal("podping"),
+      v.literal("manual_by_user"),
+      v.literal("manual_by_admin"),
+      v.literal("manual_by_creator")
+    ),
+    status: v.union(
+      v.literal("waiting"),
+      v.literal("in_progress"),
+      v.literal("thrown_out"), // Skipped due to 3-min debounce (LOW priority)
+      v.literal("discarded"), // Manually discarded during cleanup
+      v.literal("finished"),
+      v.literal("errored")
+    ),
+    errorMessage: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_status_priority", ["status", "priority"])
+    .index("by_feed_url_status", ["feedUrl", "status"])
+    .index("by_created", ["createdAt"])
+    .index("by_status", ["status"]),
+
   // Queue for fetched RSS XML (decouples fetching from parsing)
   raw_feeds: defineTable({
     feedUrl: v.string(),

@@ -16,4 +16,9 @@ app.use(workpool);
 app.use(workflow);
 app.use(crons);
 
+// RSS Feed Parse Workpools (prioritized queues)
+app.use(workpool, { name: "rssHighPriority" });
+app.use(workpool, { name: "rssMediumPriority" });
+app.use(workpool, { name: "rssLowPriority" });
+
 export default app;

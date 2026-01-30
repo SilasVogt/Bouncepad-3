@@ -66,6 +66,21 @@ export const setupHiveCrons = mutation({
       results.push("cleanupOldRecords already exists");
     }
 
+    // RSS Feed Parse Scheduler - Every 5 seconds
+    // Reads from podping_histories, creates prioritized parse jobs, dispatches to workpools
+    if (!existingNames.includes("scheduleParse")) {
+      await crons.register(
+        ctx,
+        { kind: "interval", ms: 5_000 }, // 5 seconds
+        internal.parseScheduler.scheduleParse,
+        {},
+        "scheduleParse"
+      );
+      results.push("Registered scheduleParse (5s interval)");
+    } else {
+      results.push("scheduleParse already exists");
+    }
+
     return { success: true, results };
   },
 });
@@ -92,7 +107,8 @@ export const deleteHiveCrons = mutation({
         job.name === "fetchHiveBlocks" ||
         job.name === "processHiveBlocks" ||
         job.name === "syncHiveBlocks" ||
-        job.name === "cleanupOldRecords"
+        job.name === "cleanupOldRecords" ||
+        job.name === "scheduleParse"
     );
 
     for (const job of hiveJobs) {
