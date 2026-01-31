@@ -71,7 +71,7 @@ function AdminHiveContent() {
   }, []);
 
   // Determine which items to display
-  let displayItems: typeof listResult extends { items: infer T } ? T : never = [];
+  let displayItems: NonNullable<typeof listResult>["items"] | [] = [];
   let isSearching = false;
 
   if (activeSearch) {

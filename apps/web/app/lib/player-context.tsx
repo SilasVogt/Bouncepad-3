@@ -178,7 +178,7 @@ export function PlayerProvider({ children }: PlayerProviderProps) {
   const loadEpisode = useCallback((newEpisode: EpisodePlayerData, startPosition?: number) => {
     setEpisode(newEpisode);
 
-    if (audioRef.current) {
+    if (audioRef.current && newEpisode.audioUrl) {
       audioRef.current.src = newEpisode.audioUrl;
       audioRef.current.load();
 

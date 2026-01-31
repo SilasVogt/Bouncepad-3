@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { Id } from "@bouncepad/backend/convex/_generated/dataModel";
+import { ThemeMode } from "../theme/colors";
 
 // =============================================================================
 // PHASE 1: CORE PODCAST TYPES
@@ -120,7 +121,8 @@ export interface Enclosure {
 // PHASE 2: USER ENGAGEMENT TYPES
 // =============================================================================
 
-export type ThemeMode = "system" | "light" | "dark";
+// ThemeMode is imported from ../theme/colors and re-exported
+export type { ThemeMode };
 export type UserRole = "user" | "admin";
 export type Platform = "ios" | "android";
 
@@ -534,11 +536,56 @@ export type PodcastDisplayStatus = "offline" | "scheduled" | "live";
 export interface PodcastCardData {
   id: string;
   title: string;
-  creatorName: string;
+  creatorName?: string;
   imageUrl?: string;
-  status: PodcastDisplayStatus;
+  status?: PodcastDisplayStatus;
   isFollowing?: boolean;
   scheduledTime?: number;
+  feedUrl?: string;
+}
+
+// Display-only types for UI components (use string id instead of Convex Id)
+export interface PersonDisplay {
+  id: string;
+  name: string;
+  role?: string;
+  imageUrl?: string;
+  url?: string;
+  href?: string; // Alias for url, used by some components
+}
+
+export interface TrailerDisplay {
+  id: string;
+  title: string;
+  url: string;
+  mimeType?: string;
+  duration?: number;
+  imageUrl?: string;
+}
+
+export interface EpisodeDisplay {
+  id: string;
+  title: string;
+  description?: string;
+  duration?: number;
+  pubDate?: number;
+  imageUrl?: string;
+  episodeNumber?: number;
+  seasonNumber?: number;
+  audioUrl?: string;
+}
+
+export interface FundingDisplay {
+  url: string;
+  platform: string;
+  description?: string;
+}
+
+export interface PodrollDisplay {
+  id: string;
+  title: string;
+  imageUrl?: string;
+  feedUrl?: string;
 }
 
 // Full podcast page data (aggregated from multiple tables)
@@ -555,11 +602,11 @@ export interface PodcastPageData {
   nextLiveDate?: number;
   isFollowing?: boolean;
   notifications?: NotificationSettings;
-  people: Person[];
-  trailers: Trailer[];
-  episodes: Episode[];
-  funding?: Funding[];
-  podroll: Podroll[];
+  people: PersonDisplay[];
+  trailers: TrailerDisplay[];
+  episodes: EpisodeDisplay[];
+  funding?: FundingDisplay[];
+  podroll: PodrollDisplay[];
   similarPodcasts: PodcastCardData[];
   hasValue4Value?: boolean;
   websiteUrl?: string;
@@ -625,6 +672,7 @@ export interface EpisodeComment {
 
 export interface EpisodePlayerData {
   _id: Id<"episodes">;
+  id: string; // String version of _id for UI convenience
   podcastId: Id<"podcasts">;
   podcastTitle: string;
   podcastImageUrl?: string;
@@ -638,10 +686,10 @@ export interface EpisodePlayerData {
   seasonNumber?: number;
   chapters?: EpisodeChapter[];
   transcript?: TranscriptSegment[];
-  funding?: Funding[];
+  funding?: FundingDisplay[];
   comments?: EpisodeComment[];
   commentCount?: number;
-  people?: Person[];
+  people?: PersonDisplay[];
   lastPlayedPosition?: number;
   alternateSources?: MediaSource[];
 }
@@ -676,3 +724,13 @@ export interface PlayerContextValue extends PlayerState {
   stop: () => Promise<void>;
   setShowMiniPlayer: (show: boolean) => void;
 }
+
+// =============================================================================
+// TYPE ALIASES FOR BACKWARDS COMPATIBILITY
+// =============================================================================
+// These aliases use display types for UI components
+
+export type PodcastFunding = FundingDisplay;
+export type PodcastPerson = PersonDisplay;
+export type PodcastEpisode = EpisodeDisplay;
+export type PodcastPodrollItem = PodrollDisplay;
