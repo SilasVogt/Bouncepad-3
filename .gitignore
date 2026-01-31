@@ -38,3 +38,10 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# TanStack
+.tanstack/

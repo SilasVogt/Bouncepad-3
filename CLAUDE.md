@@ -57,6 +57,54 @@ When the user tells Claude what feature they're working on, Claude should:
 
 ---
 
+## Cloudflare Workers Deployment
+
+The web app deploys to Cloudflare Workers via GitHub Actions on push.
+
+### Deployment Environments
+
+| Branch | Environment | Worker Name | URL |
+|--------|-------------|-------------|-----|
+| `feature/*` | Preview alias | `bouncepad-web` | `<alias>-bouncepad-web.<subdomain>.workers.dev` |
+| `develop` | Dev | `bouncepad-web-dev` | `bouncepad-web-dev.<subdomain>.workers.dev` |
+| `preview` | Preview | `bouncepad-web-preview` | `preview.bouncepad.live` (TBD) |
+| `main` | Production | `bouncepad-web` | `bouncepad.live` (TBD) |
+
+### Local Development
+
+1. Run `bun run dev:web` from root (uses local .env file)
+2. For Cloudflare-specific local dev: `cd apps/web && bunx wrangler dev`
+
+### Manual Deployment Commands
+
+From `apps/web/`:
+```bash
+bun run deploy           # Default deployment
+bun run deploy:dev       # Deploy to dev environment
+bun run deploy:preview   # Deploy to preview environment
+bun run deploy:production # Deploy to production
+```
+
+### Environment Variables
+
+**Required GitHub Secrets:**
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers permissions
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
+- `CLERK_PUBLISHABLE_KEY_DEV` - Clerk dev/test publishable key
+- `CLERK_PUBLISHABLE_KEY_PROD` - Clerk production publishable key
+- `CONVEX_URL_DEV` - Convex development deployment URL
+- `CONVEX_URL_PROD` - Convex production deployment URL (TBD)
+
+**Local Development:**
+Copy `apps/web/.dev.vars.example` to `apps/web/.dev.vars` and fill in values.
+
+### Configuration Files
+
+- `apps/web/wrangler.toml` - Worker configuration
+- `.github/workflows/deploy.yml` - GitHub Actions deployment workflow
+
+---
+
 ## UI Component System
 
 **IMPORTANT**: Always use the established UI component library. Do NOT create inline components or use raw HTML/Tailwind when a component exists.
