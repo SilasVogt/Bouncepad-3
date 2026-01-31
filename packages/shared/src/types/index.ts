@@ -536,9 +536,9 @@ export type PodcastDisplayStatus = "offline" | "scheduled" | "live";
 export interface PodcastCardData {
   id: string;
   title: string;
-  creatorName?: string;
+  creatorName: string;
   imageUrl?: string;
-  status?: PodcastDisplayStatus;
+  status: PodcastDisplayStatus;
   isFollowing?: boolean;
   scheduledTime?: number;
   feedUrl?: string;
@@ -670,10 +670,10 @@ export interface EpisodeComment {
   isLiked?: boolean;
 }
 
+// Display type for episode player UI - uses string IDs for consistency
 export interface EpisodePlayerData {
-  _id: Id<"episodes">;
-  id: string; // String version of _id for UI convenience
-  podcastId: Id<"podcasts">;
+  id: string;
+  podcastId: string;
   podcastTitle: string;
   podcastImageUrl?: string;
   title: string;

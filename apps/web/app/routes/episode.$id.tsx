@@ -8,13 +8,12 @@ export const Route = createFileRoute("/episode/$id")({
   component: EpisodePageRoute,
 });
 
-// Mock data for demo - using 'as any' for Convex ID fields since this is demo data
+// Mock data for demo
 const mockEpisode: EpisodePlayerData = {
   id: "ep1",
-  _id: "ep1" as any,
   title: "600: The Great Linux Panic",
   description: "In this episode, we dive deep into the recent Linux kernel panic that affected millions of servers worldwide. Chris and Wes break down what happened, how it was fixed, and what we can learn from it.",
-  podcastId: "demo" as any,
+  podcastId: "demo",
   podcastTitle: "Linux Unplugged",
   podcastImageUrl: "https://picsum.photos/seed/linux/400/400",
   audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
