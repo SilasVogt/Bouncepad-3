@@ -55,8 +55,8 @@ jobs:
           # Remove trailing dash if truncation created one
           ALIAS="${ALIAS%-}"
           echo "Deploying with preview alias: $ALIAS"
-          bunx wrangler versions upload --tag "$ALIAS" --message "Deploy feature/$BRANCH_NAME"
-          bunx wrangler versions deploy --preview-alias "$ALIAS"
+          bunx wrangler versions upload --tag "$ALIAS" --preview-alias "$ALIAS" --message "Deploy feature/$BRANCH_NAME"
+          bunx wrangler versions deploy --tag "$ALIAS"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
