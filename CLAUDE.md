@@ -9,6 +9,7 @@
 | Branch | Purpose | Deployment | Environment |
 |--------|---------|------------|-------------|
 | `feature/*` | Active development | Preview deployments on Cloudflare Workers (on push) | Dev keys |
+| `fix/*` | Bug fixes, type errors, cleanup | **No auto-deploy** | - |
 | `develop` | Default branch, integration | Cloudflare Workers (admin-only, behind login) | Convex dev + Clerk test keys |
 | `preview` | Tested features for premium users | preview.bouncepad.live | Clerk production keys |
 | `main` | Production | bouncepad.live | Full production |

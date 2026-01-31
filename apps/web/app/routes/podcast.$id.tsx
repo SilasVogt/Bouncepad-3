@@ -41,8 +41,8 @@ const mockPodcast: PodcastPageData = {
     { id: "p3", feedUrl: "https://example.com/feed3", title: "This Week in Bitcoin", imageUrl: "https://picsum.photos/seed/twib/100/100" },
   ],
   similarPodcasts: [
-    { id: "s1", feedUrl: "https://example.com/feed4", title: "Late Night Linux", imageUrl: "https://picsum.photos/seed/latenight/100/100" },
-    { id: "s2", feedUrl: "https://example.com/feed5", title: "Destination Linux", imageUrl: "https://picsum.photos/seed/destination/100/100" },
+    { id: "s1", feedUrl: "https://example.com/feed4", title: "Late Night Linux", creatorName: "Late Night Linux", status: "offline" as const, imageUrl: "https://picsum.photos/seed/latenight/100/100" },
+    { id: "s2", feedUrl: "https://example.com/feed5", title: "Destination Linux", creatorName: "Destination Linux", status: "offline" as const, imageUrl: "https://picsum.photos/seed/destination/100/100" },
   ],
   websiteUrl: "https://linuxunplugged.com",
 };
