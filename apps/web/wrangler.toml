@@ -30,5 +30,5 @@ name = "bouncepad-web-preview"
 # Deployed to: bouncepad.live
 # Uses: Full production config
 [env.production]
-name = "bouncepad-web"
+name = "bouncepad-web-prod"
 # routes = [{ pattern = "bouncepad.live", custom_domain = true }]

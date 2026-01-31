@@ -46,7 +46,8 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/feature/}"
           ALIAS=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
           echo "Deploying with preview alias: $ALIAS"
-          bunx wrangler versions upload --preview-alias "$ALIAS"
+          bunx wrangler versions upload --tag "$ALIAS" --message "Deploy feature/$BRANCH_NAME"
+          bunx wrangler versions deploy --preview-alias "$ALIAS"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -84,9 +85,9 @@ jobs:
           if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
             BRANCH_NAME="${GITHUB_REF#refs/heads/feature/}"
             ALIAS=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-            echo "::notice::Preview URL: https://${ALIAS}-bouncepad-web.<your-subdomain>.workers.dev"
+            echo "::notice::Preview URL: https://${ALIAS}-bouncepad-web.silasvogt.workers.dev"
           elif [[ "$GITHUB_REF" == "refs/heads/develop" ]]; then
-            echo "::notice::Dev URL: https://bouncepad-web-dev.<your-subdomain>.workers.dev"
+            echo "::notice::Dev URL: https://new.bouncepad.live"
           elif [[ "$GITHUB_REF" == "refs/heads/preview" ]]; then
             echo "::notice::Preview URL: https://preview.bouncepad.live (once custom domain configured)"
           elif [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
