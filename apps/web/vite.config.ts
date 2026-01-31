@@ -7,10 +7,10 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
     tanstackStart({
       srcDirectory: "app",
     }),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     react(),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
